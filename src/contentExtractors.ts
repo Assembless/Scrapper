@@ -1,20 +1,20 @@
 import $ from "cheerio";
 import { TStars } from "./types";
 
-const title = (html: cheerio.Element): string => {
+const title = (html: cheerio.Cheerio): string => {
   return $(html).contents().find(".lister-item-header a").text().trim();
 };
-const getSearchPageProductionNumber = (html: any): number => {
+const productionCount = (html: cheerio.Cheerio): number => {
   const data = $(html).contents().find("div.desc span").text().trim().slice(8, 14).split(",").join("");
   return parseInt(data);
 };
 
-const year = (html: cheerio.Element): string => {
+const year = (html: cheerio.Cheerio): string => {
   const data = $(html).contents().find("span.lister-item-year").text().trim();
   const removedBracket = data.slice(1, data.length - 1).trim();
   return removedBracket;
 };
-const director = (html: cheerio.Element): string => {
+const director = (html: cheerio.Cheerio): string => {
   const pData = $(html)
     .contents()
     .find("div.lister-item-content p")
@@ -27,24 +27,20 @@ const director = (html: cheerio.Element): string => {
   return pData[1].trim() === "Director:" ? pData[2] : "No data";
 };
 
-const genres = (html: cheerio.Element): string[] => {
+const genres = (html: cheerio.Cheerio): string[] => {
   return $(html).contents().find("span.genre").text().trim().split(",");
 };
-const plot = (html: cheerio.Element): string => {
+const plot = (html: cheerio.Cheerio): string => {
   return $(html).contents().find("div.lister-item-content p.text-muted").last().text().trim();
 };
-const metascore = (html: cheerio.Element): number | string => {
+const metascore = (html: cheerio.Cheerio): number | string => {
   const data = $(html).contents().find("span.metascore").text().trim();
   return data === undefined ? "-" : data;
 };
 
-const raiting = (html: cheerio.Element): number | string => {
+const raiting = (html: cheerio.Cheerio): number | string => {
   const data = $(html).contents().find("div.inline-block.ratings-imdb-rating strong").text().trim();
   return data === "-" ? "-" : data;
-};
-const getSearchPageProductionPageLink = (html: cheerio.Element): string => {
-  const link = $(html).find("div.lister-item-image.float-left a").attr("href");
-  return link !== undefined ? `https://www.imdb.com${link}` : "Couldn't get a link";
 };
 
 const poster = (html: cheerio.Cheerio): string => {
@@ -90,22 +86,9 @@ const type = (html: cheerio.Cheerio): string => {
   }
 };
 
-const getProductionPageReviewsLink = (html: cheerio.Cheerio): string | undefined => {
-  const link = $(html).find("div.user-comments").find("a").last().attr("href");
-  return link !== undefined ? `https://www.imdb.com${link}` : undefined;
-};
-
-const getProductionPageMediaviewerLink = (html: cheerio.Cheerio): string | undefined => {
-  const link = $(html).find("div.poster").find("a").attr("href");
-  return link !== undefined ? `https://www.imdb.com${link}` : undefined;
-};
-
 const reviewTitle = (html: cheerio.Cheerio): string => {
   return $(html).find("a.title").text().trim();
 };
-// const reviewsBoxes = (html: cheerio.Cheerio): cheerio.Cheerio => {
-//   return $(html).find("div.lister-item.mode-detail.imdb-user-review.collapsable");
-// };
 const reviewRaiting = (html: cheerio.Cheerio): string => {
   return $(html).find("span.rating-other-user-rating span").first().text().trim();
 };
@@ -116,7 +99,7 @@ const reviewText = (html: cheerio.Cheerio): string => {
   return $(html).find("div.text").text().trim();
 };
 
-export const extractors = {
+export const contentExtractors = {
   title,
   year,
   raiting,
@@ -129,6 +112,7 @@ export const extractors = {
   duration,
   type,
   stars,
+  productionCount,
   review: {
     title: reviewTitle,
     raiting: reviewRaiting,
@@ -137,12 +121,3 @@ export const extractors = {
   },
 };
 
-// export const productionPage = {
-//   getReviewsLink: getProductionPageReviewsLink,
-//   getMediaviewrLink: getProductionPageMediaviewerLink,
-// };
-
-// export const searchPage = {
-//   getLink: getSearchPageProductionPageLink,
-//   getProductionCount: getSearchPageProductionNumber,
-// };

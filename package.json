@@ -1,0 +1,25 @@
+{
+  "name": "imdb-scrapper",
+  "version": "1.0.0",
+  "description": "Script for scrapping imdb page",
+  "main": "index.js",
+  "author": "Bartek Walczak",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start:dev": "ts-node ./src/index.ts",
+    "build": "rimraf ./build && tsc",
+    "start": "yarn run build && node build/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.22",
+    "chalk": "^4.1.0",
+    "cheerio": "^1.0.0-rc.5",
+    "cli-progress": "^3.8.2",
+    "inquirer": "^7.3.3",
+    "puppeteer": "^5.5.0",
+    "rimraf": "^3.0.2",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  }
+}

@@ -1,1 +1,8 @@
-console.log('hello word')
+
+
+
+(async ()=> {
+
+    
+
+})()

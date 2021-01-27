@@ -1,14 +1,14 @@
 import chalk from "chalk";
 import inquirer, { prompt } from "inquirer";
 
-type TSelectActionType = "Scrap productions" | "Update Data" | "Upload data";
+type TSelectActionType = "Scrap productions" | "Upload data";
 
 export const selectActionType = async (): Promise<{ actionType: TSelectActionType }> => {
   return await prompt({
     type: "list",
     name: "actionType",
     message: "What do you want to do ?",
-    choices: ["Scrap productions", "Update Data", "Upload data"],
+    choices: ["Scrap productions", "Upload data"],
   });
 };
 
@@ -82,11 +82,67 @@ export const setReviewsNumber = async () => {
   });
 };
 
-export const chooseResult = async (results: string[]) => {
+export const chooseFile = async (files: string[]) => {
   return await prompt({
     type: "list",
-    name: "result",
-    message: `What result would you like to upload ? `,
-    choices: results,
+    name: "file",
+    message: `What file would you like to upload ? `,
+    choices: files,
   });
 };
+
+export const whereToUpload = async () => {
+    return await prompt({
+      type: "list",
+      name: "destination",
+      message: `Where would you like to upload your file ? `,
+      choices: ['firebase'],
+    });
+}
+
+const firebaseQuestions = [
+  {
+    type: "input",
+    name: "apiKey",
+    message: "ApiKey:",
+  },
+  {
+    type: "input",
+    name: "authDomain",
+    message: "AuthDomain:",
+  },
+  {
+    type: "input",
+    name: "projectId",
+    message: "projectID:",
+  },
+];
+
+export const chooseFirebaseConfig = async (files: string[]) => {
+    return await prompt({
+      type: "list",
+      name: "firebaseConfig",
+      message: "Choose firebase config",
+      choices: [...files,'create new config']
+    });
+}
+export const saveNewConfig = async () => {
+    return await prompt({
+      type: "confirm",
+      name: "saveInfo",
+      message: "Do you like to save your config for future ? ",
+      default: true
+    });
+}
+
+export const newConfigName = async () => {
+  return await prompt({
+    type: "input",
+    name: "configName",
+    message: "What would be a name for your new config ? ",
+  });
+}
+
+export const setFirebaseInfo = async () => {
+    return await prompt(firebaseQuestions)
+}

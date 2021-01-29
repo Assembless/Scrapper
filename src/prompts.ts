@@ -3,6 +3,7 @@ import inquirer, { prompt } from "inquirer";
 
 type TSelectActionType = "Scrap productions" | "Upload data";
 
+
 export const selectActionType = async (): Promise<{ actionType: TSelectActionType }> => {
   return await prompt({
     type: "list",
@@ -12,7 +13,7 @@ export const selectActionType = async (): Promise<{ actionType: TSelectActionTyp
   });
 };
 
-export const setConfig = async (configs: string[]) => {
+export const setConfig = async (configs: string[]): Promise<{ configName: string | "Create config" }> => {
   return await prompt({
     type: "list",
     name: "configName",

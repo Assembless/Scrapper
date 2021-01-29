@@ -1,9 +1,17 @@
 import chalk from "chalk";
-import { startBrowser } from "./browser";
-import { chooseFile, chooseFirebaseConfig, newConfigName, saveNewConfig, selectActionType, setFirebaseInfo, whereToUpload } from "./prompts";
-import { getDirectoryFiles, getFile, saveFile } from "./utils";
+import progressbar from "cli-progress";
+import cheerio from 'cheerio'
+import { createScrapingConfig } from "./configCreator";
+import { createMainInstance, goToAndGetHTML, startBrowser } from "./browser";
+import { contentExtractors } from "./contentExtractors";
+import { chooseFile, chooseFirebaseConfig, newConfigName, saveNewConfig, selectActionType, setConfig, setFileName, setFirebaseInfo, setProductionNumber, setStartingIndex, whereToUpload } from "./prompts";
+import { createStack, getDirectoryFiles, getFile, saveFile } from "./utils";
+import { TExtractConfig } from "./types";
+import { linkExtractor } from "./linkExtractors";
 
 (async () => {
+
+  const STARTING_URL = "https://www.imdb.com/search/title/?companies=co0144901&start=1&ref_=adv_prv";
   const { actionType } = await selectActionType();
 
   switch (actionType) {
@@ -43,6 +51,32 @@ import { getDirectoryFiles, getFile, saveFile } from "./utils";
 
       break;
     case "Scrap productions":
+      console.log('Starting browser')
+      const browser = await startBrowser()
+      const mainInstance = await createMainInstance(browser)
+      let $ =  await goToAndGetHTML(STARTING_URL,mainInstance)
+      const pageContent = $('div#pagecontent')
+      const MAX_PRODUCTIONS = contentExtractors.productionCount(pageContent);
+
+      console.log(MAX_PRODUCTIONS)
+
+      let config: TExtractConfig
+      const configs: string[] = getDirectoryFiles('./queryConfigs/')
+
+      const {configName} = await setConfig(configs)
+
+      if (configName === "Create config"){
+        config = await createScrapingConfig()
+      }else {
+        config = getFile(`./queryConfigs/${configName}`) as TExtractConfig
+      }
+
+        const { fileName } = (await setFileName()) as { fileName: string };
+
+        const stack = await createStack(MAX_PRODUCTIONS,mainInstance)
+
+        console.log(stack)
+
       break;
     default:
       return;

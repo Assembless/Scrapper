@@ -36,58 +36,81 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var browser_1 = require("./browser");
+var contentExtractors_1 = require("./contentExtractors");
 var prompts_1 = require("./prompts");
-var utils_1 = require("./utils");
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var actionType, _a, files, file, data, destination, firebaseConfigs, firebaseConfig, _b, apiKey, authDomain, projectId, saveInfo, configName, file_1;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0: return [4 /*yield*/, prompts_1.selectActionType()];
+    var STARTING_URL, actionType, _a, browser, instance, $, pageContent, MAX_PRODUCTIONS;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                STARTING_URL = "https://www.imdb.com/search/title/?companies=co0144901&start=1&ref_=adv_prv";
+                return [4 /*yield*/, prompts_1.selectActionType()];
             case 1:
-                actionType = (_c.sent()).actionType;
+                actionType = (_b.sent()).actionType;
                 _a = actionType;
                 switch (_a) {
                     case "Upload data": return [3 /*break*/, 2];
-                    case "Scrap productions": return [3 /*break*/, 12];
+                    case "Scrap productions": return [3 /*break*/, 3];
                 }
-                return [3 /*break*/, 13];
-            case 2:
-                files = utils_1.getDirectoryFiles("./results/");
-                return [4 /*yield*/, prompts_1.chooseFile(files)];
+                return [3 /*break*/, 7];
+            case 2: 
+            // const files = getDirectoryFiles("./results/");
+            // const {file} = await chooseFile(files)
+            // const data = getFile(`./results/${file}`);
+            // const { destination } = await whereToUpload();
+            // if (destination === "firebase") {
+            //   const firebaseConfigs = getDirectoryFiles("./firebaseConfigs/");
+            //   if (firebaseConfigs.length > 0) {
+            //     const { firebaseConfig } = await chooseFirebaseConfig(firebaseConfigs);
+            //     if (firebaseConfig === "create new config") {
+            //       const { apiKey, authDomain, projectId } = await setFirebaseInfo();
+            //       const { saveInfo } = await saveNewConfig();
+            //       if (saveInfo) {
+            //         const { configName } = await newConfigName();
+            //         saveFile(`./firebaseConfigs/${configName}`, { apiKey, authDomain, projectId });
+            //       }
+            //     } else {
+            //       const { apiKey, authDomain, projectId } = getFile(`./firebaseConfigs/${firebaseConfig}`) as { apiKey: string; authDomain: string; projectId: string };
+            //     }
+            //   } else {
+            //     const { apiKey, authDomain, projectId } = await setFirebaseInfo();
+            //     const { saveInfo } = await saveNewConfig();
+            //     if (saveInfo) {
+            //       const { configName } = await newConfigName();
+            //       saveFile(`./firebaseConfigs/${configName}`, { apiKey, authDomain, projectId });
+            //     }
+            //   }
+            // }
+            return [3 /*break*/, 8];
             case 3:
-                file = (_c.sent()).file;
-                data = utils_1.getFile("./results/" + file);
-                return [4 /*yield*/, prompts_1.whereToUpload()];
+                console.log('Starting browser');
+                return [4 /*yield*/, browser_1.startBrowser()];
             case 4:
-                destination = (_c.sent()).destination;
-                if (!(destination === 'firestore')) return [3 /*break*/, 11];
-                firebaseConfigs = utils_1.getDirectoryFiles('./firebaseConfigs');
-                if (!(firebaseConfigs.length > 0)) return [3 /*break*/, 11];
-                return [4 /*yield*/, prompts_1.chooseFirebaseConfig(firebaseConfigs)];
+                browser = _b.sent();
+                return [4 /*yield*/, browser_1.createMainInstance(browser)];
             case 5:
-                firebaseConfig = (_c.sent()).firebaseConfig;
-                if (!(firebaseConfig === 'create new config')) return [3 /*break*/, 10];
-                return [4 /*yield*/, prompts_1.setFirebaseInfo()];
+                instance = _b.sent();
+                return [4 /*yield*/, browser_1.goToAndGetHTML(STARTING_URL, instance)];
             case 6:
-                _b = _c.sent(), apiKey = _b.apiKey, authDomain = _b.authDomain, projectId = _b.projectId;
-                return [4 /*yield*/, prompts_1.saveNewConfig()];
-            case 7:
-                saveInfo = (_c.sent()).saveInfo;
-                if (!saveInfo) return [3 /*break*/, 9];
-                return [4 /*yield*/, prompts_1.newConfigName()];
-            case 8:
-                configName = (_c.sent()).configName;
-                utils_1.saveFile("./firebaseConfigs/" + configName, { apiKey: apiKey, authDomain: authDomain, projectId: projectId });
-                _c.label = 9;
-            case 9: return [3 /*break*/, 11];
-            case 10:
-                file_1 = utils_1.getFile("./firebaseConfigs/" + firebaseConfig);
-                console.log(file_1);
-                _c.label = 11;
-            case 11: return [3 /*break*/, 14];
-            case 12: return [3 /*break*/, 14];
-            case 13: return [2 /*return*/];
-            case 14: return [2 /*return*/];
+                $ = _b.sent();
+                pageContent = $('div#pagecontent');
+                MAX_PRODUCTIONS = contentExtractors_1.contentExtractors.productionCount(pageContent);
+                console.log(MAX_PRODUCTIONS);
+                // let config: TExtractConfig
+                // const configs: string[] = getDirectoryFiles('./queryConfigs/')
+                // const {configName} = await setConfig(configs)
+                // if (configName === "Create config"){
+                //   config = await createScrapingConfig()
+                // }else {
+                //   config = getFile(`./queryConfigs/${configName}`) as TExtractConfig
+                // }
+                //   const { fileName } = (await setFileName()) as { fileName: string };
+                //   const stack = await createStack(MAX_PRODUCTIONS,mainInstance)
+                //   console.log(stack)
+                return [3 /*break*/, 8];
+            case 7: return [2 /*return*/];
+            case 8: return [2 /*return*/];
         }
     });
 }); })();

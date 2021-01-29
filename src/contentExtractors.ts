@@ -2,7 +2,7 @@ import $ from "cheerio";
 import { TStars } from "./types";
 
 const title = (html: cheerio.Cheerio): string => {
-  return $(html).contents().find(".lister-item-header a").text().trim();
+  return html.contents().find(".lister-item-header a").text().trim();
 };
 const productionCount = (html: cheerio.Cheerio): number => {
   const data = $(html).contents().find("div.desc span").text().trim().slice(8, 14).split(",").join("");
@@ -10,12 +10,12 @@ const productionCount = (html: cheerio.Cheerio): number => {
 };
 
 const year = (html: cheerio.Cheerio): string => {
-  const data = $(html).contents().find("span.lister-item-year").text().trim();
+  const data = html.contents().find("span.lister-item-year").text().trim();
   const removedBracket = data.slice(1, data.length - 1).trim();
   return removedBracket;
 };
 const director = (html: cheerio.Cheerio): string => {
-  const pData = $(html)
+  const pData = html
     .contents()
     .find("div.lister-item-content p")
     .filter((i, el) => {
@@ -28,34 +28,34 @@ const director = (html: cheerio.Cheerio): string => {
 };
 
 const genres = (html: cheerio.Cheerio): string[] => {
-  return $(html).contents().find("span.genre").text().trim().split(",");
+  return html.contents().find("span.genre").text().trim().split(",");
 };
 const plot = (html: cheerio.Cheerio): string => {
-  return $(html).contents().find("div.lister-item-content p.text-muted").last().text().trim();
+  return html.contents().find("div.lister-item-content p.text-muted").last().text().trim();
 };
 const metascore = (html: cheerio.Cheerio): number | string => {
-  const data = $(html).contents().find("span.metascore").text().trim();
+  const data = html.contents().find("span.metascore").text().trim();
   return data === undefined ? "-" : data;
 };
 
 const raiting = (html: cheerio.Cheerio): number | string => {
-  const data = $(html).contents().find("div.inline-block.ratings-imdb-rating strong").text().trim();
+  const data = html.contents().find("div.inline-block.ratings-imdb-rating strong").text().trim();
   return data === "-" ? "-" : data;
 };
 
 const poster = (html: cheerio.Cheerio): string => {
-  const poster = $(html).find("div.poster img").attr("src");
+  const poster = html.find("div.poster img").attr("src");
   return poster !== undefined ? poster : "Couldn't get poster";
 };
 const storylinePlot = (html: cheerio.Cheerio): string => {
-  return $(html).find("div#titleStoryLine p span").text().trim();
+  return html.find("div#titleStoryLine p span").text().trim();
 };
 const duration = (html: cheerio.Cheerio): string => {
-  return $(html).find("time").first().text().trim();
+  return html.find("time").first().text().trim();
 };
 const stars = (html: cheerio.Cheerio): TStars[] => {
   const stars: TStars[] = [];
-  const elements = $(html).find("table.cast_list tbody").children();
+  const elements = html.find("table.cast_list tbody").children();
   const filtered = elements.slice(1, elements.length).filter((i, e) => {
     return $(e).children().first().attr("colspan") !== "4";
   });
@@ -76,7 +76,7 @@ const stars = (html: cheerio.Cheerio): TStars[] => {
 };
 
 const type = (html: cheerio.Cheerio): string => {
-  const text = $(html).find("div.subtext a").last().text().trim();
+  const text = html.find("div.subtext a").last().text().trim();
   if (text.includes("TV Series")) {
     return "series";
   } else if (text.includes("TV Mini-Series")) {
@@ -87,16 +87,16 @@ const type = (html: cheerio.Cheerio): string => {
 };
 
 const reviewTitle = (html: cheerio.Cheerio): string => {
-  return $(html).find("a.title").text().trim();
+  return html.find("a.title").text().trim();
 };
 const reviewRaiting = (html: cheerio.Cheerio): string => {
-  return $(html).find("span.rating-other-user-rating span").first().text().trim();
+  return html.find("span.rating-other-user-rating span").first().text().trim();
 };
 const reviewDate = (html: cheerio.Cheerio): string => {
-  return $(html).find("span.review-date").text().trim();
+  return html.find("span.review-date").text().trim();
 };
 const reviewText = (html: cheerio.Cheerio): string => {
-  return $(html).find("div.text").text().trim();
+  return html.find("div.text").text().trim();
 };
 
 export const contentExtractors = {

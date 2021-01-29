@@ -30,17 +30,7 @@ export type TData = {
   director?: string;
 };
 
-export type TExtractConfig =
-  | "title"
-  | "year"
-  | "director"
-  | "genres"
-  | "raiting"
-  | "metascore"
-  | "plot"
-  | "poster"
-  | "storylinePlot"
-  | "duration"
-  | "type"
-  | "stars"
-  | ["title" | "raiting" | "date" | "text"];
+export type TReviewConfig = "title"| "raiting"| "date"| "text"
+export type TMainConfig = "title" | "year" | "director" | "genres" | "raiting" | "metascore" | "plot" | "poster" | "storylinePlot" | "duration" | "type" | "stars";
+
+export type TExtractConfig = {main: TMainConfig[],reviews: TReviewConfig[]}

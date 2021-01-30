@@ -17,14 +17,6 @@ export const createMainInstance = async (browser:puppeteer.Browser) => {
   const instance = await browser.newPage()
   return instance
 }
-export const createScrapingInstance = async (startingUrl: string,browser:puppeteer.Browser,task: (page:puppeteer.Page)=> void) => {
-  const page = await browser.newPage()
-
-  task(page)
-
-  return page
-}
-
 
 export const goToAndGetHTML = async (url: string, page: puppeteer.Page): Promise<cheerio.Root> => {
   await page.goto(url);

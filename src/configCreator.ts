@@ -7,7 +7,7 @@ export const createScrapingConfig = async () => {
     type: "checkbox",
     message: "Select data to scrap",
     name: "mainConfig",
-    choices: ["Title", "Year", "Plot", "Storyline Plot", "Poster", "Duration", "Raiting", "Metascore", "Genres", "Stars", "Type", "Director"],
+    choices: ["Title", "Year", "Plot", "StorylinePlot", "Poster", "Duration", "Raiting", "Metascore", "Genres", "Stars", "Type", "Director"],
     validate: (answer) => (answer.length < 1 ? "You must choose at least one" : true),
   });
 
@@ -36,7 +36,9 @@ export const createScrapingConfig = async () => {
   //   }
   // });
 
-  const config: TExtractConfig = {main: mapToLowerCases(mainConfig),reviews: mapToLowerCases(reviewConfig) }
+  const config: TExtractConfig = {mainConfig: mapToLowerCases(mainConfig),reviewsConfig: mapToLowerCases(reviewConfig) }
+  
+  console.log(config.mainConfig)
   
   const { configName } = await prompt({
     type: "input",
@@ -44,8 +46,7 @@ export const createScrapingConfig = async () => {
     message: "What's your config name",
   });
 
-  const data = JSON.stringify(config, null, 4);
-  saveFile(`./queryConfigs/${configName}`, data);
+  saveFile(`./queryConfigs/${configName}`, config);
 
   return config;
 };

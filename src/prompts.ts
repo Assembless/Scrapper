@@ -3,7 +3,6 @@ import inquirer, { prompt } from "inquirer";
 
 type TSelectActionType = "Scrap productions" | "Upload data";
 
-
 export const selectActionType = async (): Promise<{ actionType: TSelectActionType }> => {
   return await prompt({
     type: "list",
@@ -93,13 +92,13 @@ export const chooseFile = async (files: string[]) => {
 };
 
 export const whereToUpload = async () => {
-    return await prompt({
-      type: "list",
-      name: "destination",
-      message: `Where would you like to upload your file ? `,
-      choices: ['firebase'],
-    });
-}
+  return await prompt({
+    type: "list",
+    name: "destination",
+    message: `Where would you like to upload your file ? `,
+    choices: ["firebase"],
+  });
+};
 
 const firebaseQuestions = [
   {
@@ -120,21 +119,21 @@ const firebaseQuestions = [
 ];
 
 export const chooseFirebaseConfig = async (files: string[]) => {
-    return await prompt({
-      type: "list",
-      name: "firebaseConfig",
-      message: "Choose firebase config",
-      choices: [...files,'create new config']
-    });
-}
+  return await prompt({
+    type: "list",
+    name: "firebaseConfig",
+    message: "Choose firebase config",
+    choices: [...files, "create new config"],
+  });
+};
 export const saveNewConfig = async () => {
-    return await prompt({
-      type: "confirm",
-      name: "saveInfo",
-      message: "Do you like to save your config for future ? ",
-      default: true
-    });
-}
+  return await prompt({
+    type: "confirm",
+    name: "saveInfo",
+    message: "Do you like to save your config for future ? ",
+    default: true,
+  });
+};
 
 export const newConfigName = async () => {
   return await prompt({
@@ -142,8 +141,24 @@ export const newConfigName = async () => {
     name: "configName",
     message: "What would be a name for your new config ? ",
   });
-}
+};
+export const setAmountOfInstances = async () => {
+  return await prompt({
+    type: "number",
+    name: "instanceAmount",
+    message: "How many instances would you like to run? ",
+    validate: (val) => {
+      if (isNaN(val)) {
+        return "Please type number";
+      }else if(val <= 0){
+        return 'Number must be higher than 0'
+      } else {
+        return true;
+      }
+    },
+  });
+};
 
 export const setFirebaseInfo = async () => {
-    return await prompt(firebaseQuestions)
-}
+  return await prompt(firebaseQuestions);
+};

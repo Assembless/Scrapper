@@ -1,11 +1,6 @@
-/node_modules
-./node_modules
 node_modules
-/results
-./results
-/firebaseConfigs
-./firebaseConfigs
-/queryConfgis
-./queryConfgis
-./build
-/build
+results
+firebaseConfigs
+queryConfigs
+build
+

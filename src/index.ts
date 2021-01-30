@@ -4,10 +4,10 @@ import cheerio from 'cheerio'
 import { createScrapingConfig } from "./configCreator";
 import { createMainInstance, goToAndGetHTML, startBrowser } from "./browser";
 import { contentExtractors } from "./contentExtractors";
-import { chooseFile, chooseFirebaseConfig, newConfigName, saveNewConfig, selectActionType, setConfig, setFileName, setFirebaseInfo, setProductionNumber, setStartingIndex, whereToUpload } from "./prompts";
-import { createStack, getDirectoryFiles, getFile, saveFile } from "./utils";
-import { TExtractConfig } from "./types";
-import { linkExtractor } from "./linkExtractors";
+import { chooseFile, chooseFirebaseConfig, newConfigName, saveNewConfig, selectActionType, setAmountOfInstances, setConfig, setFileName, setFirebaseInfo, setProductionNumber, setStartingIndex, whereToUpload } from "./prompts";
+import { createStack, getDirectoryFiles, getFile, saveFile, createInstances, createTask, startInstances } from "./utils";
+import { TData, TExtractConfig } from "./types";
+import { miscExtractors } from "./miscExtractors";
 
 (async () => {
 
@@ -56,7 +56,7 @@ import { linkExtractor } from "./linkExtractors";
       const mainInstance = await createMainInstance(browser)
       let $ =  await goToAndGetHTML(STARTING_URL,mainInstance)
       const pageContent = $('div#pagecontent')
-      const MAX_PRODUCTIONS = contentExtractors.productionCount(pageContent);
+      const MAX_PRODUCTIONS = miscExtractors.productionCount(pageContent);
 
       console.log(MAX_PRODUCTIONS)
 
@@ -75,7 +75,19 @@ import { linkExtractor } from "./linkExtractors";
 
         const stack = await createStack(MAX_PRODUCTIONS,mainInstance)
 
-        console.log(stack)
+        const data:TData[] = [] 
+
+        const {instanceAmount} = await setAmountOfInstances()
+
+        const instacnes = await createInstances(instanceAmount,browser)
+
+
+        console.log("mainConfig: " + config['mainConfig']);
+        const taskConfig = {stack,config,data}
+
+        await startInstances(instacnes,taskConfig);
+
+        // console.log(data)
 
       break;
     default:

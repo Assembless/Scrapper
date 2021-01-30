@@ -36,11 +36,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var configCreator_1 = require("./configCreator");
 var browser_1 = require("./browser");
-var contentExtractors_1 = require("./contentExtractors");
 var prompts_1 = require("./prompts");
+var utils_1 = require("./utils");
+var miscExtractors_1 = require("./miscExtractors");
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var STARTING_URL, actionType, _a, browser, instance, $, pageContent, MAX_PRODUCTIONS;
+    var STARTING_URL, actionType, _a, browser, mainInstance, $, pageContent, MAX_PRODUCTIONS, config, configs, configName, fileName, stack, data, instanceAmount, instacnes, taskConfig;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -53,7 +55,7 @@ var prompts_1 = require("./prompts");
                     case "Upload data": return [3 /*break*/, 2];
                     case "Scrap productions": return [3 /*break*/, 3];
                 }
-                return [3 /*break*/, 7];
+                return [3 /*break*/, 16];
             case 2: 
             // const files = getDirectoryFiles("./results/");
             // const {file} = await chooseFile(files)
@@ -82,7 +84,7 @@ var prompts_1 = require("./prompts");
             //     }
             //   }
             // }
-            return [3 /*break*/, 8];
+            return [3 /*break*/, 17];
             case 3:
                 console.log('Starting browser');
                 return [4 /*yield*/, browser_1.startBrowser()];
@@ -90,27 +92,48 @@ var prompts_1 = require("./prompts");
                 browser = _b.sent();
                 return [4 /*yield*/, browser_1.createMainInstance(browser)];
             case 5:
-                instance = _b.sent();
-                return [4 /*yield*/, browser_1.goToAndGetHTML(STARTING_URL, instance)];
+                mainInstance = _b.sent();
+                return [4 /*yield*/, browser_1.goToAndGetHTML(STARTING_URL, mainInstance)];
             case 6:
                 $ = _b.sent();
                 pageContent = $('div#pagecontent');
-                MAX_PRODUCTIONS = contentExtractors_1.contentExtractors.productionCount(pageContent);
+                MAX_PRODUCTIONS = miscExtractors_1.miscExtractors.productionCount(pageContent);
                 console.log(MAX_PRODUCTIONS);
-                // let config: TExtractConfig
-                // const configs: string[] = getDirectoryFiles('./queryConfigs/')
-                // const {configName} = await setConfig(configs)
-                // if (configName === "Create config"){
-                //   config = await createScrapingConfig()
-                // }else {
-                //   config = getFile(`./queryConfigs/${configName}`) as TExtractConfig
-                // }
-                //   const { fileName } = (await setFileName()) as { fileName: string };
-                //   const stack = await createStack(MAX_PRODUCTIONS,mainInstance)
-                //   console.log(stack)
-                return [3 /*break*/, 8];
-            case 7: return [2 /*return*/];
-            case 8: return [2 /*return*/];
+                config = void 0;
+                configs = utils_1.getDirectoryFiles('./queryConfigs/');
+                return [4 /*yield*/, prompts_1.setConfig(configs)];
+            case 7:
+                configName = (_b.sent()).configName;
+                if (!(configName === "Create config")) return [3 /*break*/, 9];
+                return [4 /*yield*/, configCreator_1.createScrapingConfig()];
+            case 8:
+                config = _b.sent();
+                return [3 /*break*/, 10];
+            case 9:
+                config = utils_1.getFile("./queryConfigs/" + configName);
+                _b.label = 10;
+            case 10: return [4 /*yield*/, prompts_1.setFileName()];
+            case 11:
+                fileName = (_b.sent()).fileName;
+                return [4 /*yield*/, utils_1.createStack(MAX_PRODUCTIONS, mainInstance)];
+            case 12:
+                stack = _b.sent();
+                data = [];
+                return [4 /*yield*/, prompts_1.setAmountOfInstances()];
+            case 13:
+                instanceAmount = (_b.sent()).instanceAmount;
+                return [4 /*yield*/, utils_1.createInstances(instanceAmount, browser)];
+            case 14:
+                instacnes = _b.sent();
+                console.log("mainConfig: " + config['mainConfig']);
+                taskConfig = { stack: stack, config: config, data: data };
+                return [4 /*yield*/, utils_1.startInstances(instacnes, taskConfig)];
+            case 15:
+                _b.sent();
+                // console.log(data)
+                return [3 /*break*/, 17];
+            case 16: return [2 /*return*/];
+            case 17: return [2 /*return*/];
         }
     });
 }); })();

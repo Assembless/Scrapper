@@ -2,11 +2,7 @@ import $ from "cheerio";
 import { TStars } from "./types";
 
 const title = (html: cheerio.Cheerio): string => {
-  return html.contents().find(".lister-item-header a").text().trim();
-};
-const productionCount = (html: cheerio.Cheerio): number => {
-  const data = $(html).contents().find("div.desc span").text().trim().slice(8, 14).split(",").join("");
-  return parseInt(data);
+  return html.find("h1").text().trim();
 };
 
 const year = (html: cheerio.Cheerio): string => {
@@ -15,31 +11,26 @@ const year = (html: cheerio.Cheerio): string => {
   return removedBracket;
 };
 const director = (html: cheerio.Cheerio): string => {
-  const pData = html
+  const data = html
     .contents()
-    .find("div.lister-item-content p")
-    .filter((i, el) => {
-      return $(el).attr("class") === "";
-    })
-    .text()
-    .split("\n");
+    .find("div.credit_summary_item").first().children("a").text().trim()
 
-  return pData[1].trim() === "Director:" ? pData[2] : "No data";
+  return data  ? data : "No data";
 };
 
 const genres = (html: cheerio.Cheerio): string[] => {
   return html.contents().find("span.genre").text().trim().split(",");
 };
 const plot = (html: cheerio.Cheerio): string => {
-  return html.contents().find("div.lister-item-content p.text-muted").last().text().trim();
+  return html.find("div.summary_text").text().trim();
 };
 const metascore = (html: cheerio.Cheerio): number | string => {
-  const data = html.contents().find("span.metascore").text().trim();
+  const data = html.find("div.metacriticScore.score_mixed.titleReviewBarSubItem span").text().trim();
   return data === undefined ? "-" : data;
 };
 
 const raiting = (html: cheerio.Cheerio): number | string => {
-  const data = html.contents().find("div.inline-block.ratings-imdb-rating strong").text().trim();
+  const data = html.find("div.ratingValue strong span").text().trim();
   return data === "-" ? "-" : data;
 };
 
@@ -86,18 +77,19 @@ const type = (html: cheerio.Cheerio): string => {
   }
 };
 
-const reviewTitle = (html: cheerio.Cheerio): string => {
-  return html.find("a.title").text().trim();
+const reviewTitle = (element: cheerio.Element): string => {
+  return $(element).find("a.title").text().trim();
 };
-const reviewRaiting = (html: cheerio.Cheerio): string => {
-  return html.find("span.rating-other-user-rating span").first().text().trim();
+const reviewRaiting = (element: cheerio.Element): string => {
+  return $(element).find("span.rating-other-user-rating span").first().text().trim();
 };
-const reviewDate = (html: cheerio.Cheerio): string => {
-  return html.find("span.review-date").text().trim();
+const reviewDate = (element: cheerio.Element): string => {
+  return $(element).find("span.review-date").text().trim();
 };
-const reviewText = (html: cheerio.Cheerio): string => {
-  return html.find("div.text").text().trim();
+const reviewText = (element: cheerio.Element): string => {
+  return $(element).find("div.text").text().trim();
 };
+
 
 export const contentExtractors = {
   title,
@@ -112,7 +104,6 @@ export const contentExtractors = {
   duration,
   type,
   stars,
-  productionCount,
   review: {
     title: reviewTitle,
     raiting: reviewRaiting,

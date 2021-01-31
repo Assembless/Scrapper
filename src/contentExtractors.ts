@@ -6,9 +6,9 @@ const title = (html: cheerio.Cheerio): string => {
 };
 
 const year = (html: cheerio.Cheerio): string => {
-  const data = html.contents().find("span.lister-item-year").text().trim();
-  const removedBracket = data.slice(1, data.length - 1).trim();
-  return removedBracket;
+  const data = html.find("div.subtext a").last().text().trim().split('(');
+  const removedBracket = data[1].slice(1, data.length - 1).trim();
+  return data[0].concat(data[1]);
 };
 const director = (html: cheerio.Cheerio): string => {
   const data = html
@@ -19,7 +19,15 @@ const director = (html: cheerio.Cheerio): string => {
 };
 
 const genres = (html: cheerio.Cheerio): string[] => {
-  return html.contents().find("span.genre").text().trim().split(",");
+  const container = html.find("div.subtext a");
+  const genresHref = container.slice(0,container.length - 1)
+  const reviews:string[] = []
+  genresHref.each((i,e)=>{
+    const text = $(e).text().trim()
+    reviews.push(text)
+  })
+
+  return reviews
 };
 const plot = (html: cheerio.Cheerio): string => {
   return html.find("div.summary_text").text().trim();

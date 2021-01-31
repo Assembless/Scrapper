@@ -19,7 +19,6 @@ export const scraper = async (browser: Browser, config: TExtractConfig) => {
     return new Promise((resolve) => {
       const interval = setInterval(() => {
         
-          console.log(instances.findIndex((e) => e.status === "active"));
         if (stack.length === 0 && instances.findIndex((e) => e.status === "active")) {
           clearInterval(interval);
           resolve();
@@ -56,7 +55,6 @@ export const scraper = async (browser: Browser, config: TExtractConfig) => {
     const stackItem = stack.shift()!;
 
     const uid = extractUID(stackItem);
-    console.log(`${instance.name} status: ${instance.status}`);
 
     let productionData: TData = { uid };
 

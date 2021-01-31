@@ -7,8 +7,8 @@ const title = (html: cheerio.Cheerio): string => {
 
 const year = (html: cheerio.Cheerio): string => {
   const data = html.find("div.subtext a").last().text().trim().split('(');
-  const removedBracket = data[1].slice(1, data.length - 1).trim();
-  return data[0].concat(data[1]);
+  const removedBracket = data[1].slice(0, data[1].length - 1).trim();
+  return removedBracket
 };
 const director = (html: cheerio.Cheerio): string => {
   const data = html

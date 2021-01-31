@@ -57,7 +57,7 @@ import { scraper } from "./scraper";
       const mainInstance = await createMainInstance(browser)
       let $ =  await goToAndGetHTML(STARTING_URL,mainInstance)
       const pageContent = $('div#pagecontent')
-      const MAX_PRODUCTIONS = miscExtractors.productionCount(pageContent);
+      const MAX_PRODUCTIONS = 5683;
 
       console.log(MAX_PRODUCTIONS)
 

@@ -8,6 +8,7 @@ import { chooseFile, chooseFirebaseConfig, newConfigName, saveNewConfig, selectA
 import { createStack, getDirectoryFiles, getFile, saveFile, createInstances, createTask, startInstances } from "./utils";
 import { TData, TExtractConfig } from "./types";
 import { miscExtractors } from "./miscExtractors";
+import { scraper } from "./scraper";
 
 (async () => {
 
@@ -73,27 +74,31 @@ import { miscExtractors } from "./miscExtractors";
 
         const { fileName } = (await setFileName()) as { fileName: string };
 
-        const stack = await createStack(MAX_PRODUCTIONS,mainInstance)
+        const scraperManager = await scraper(browser,config)
 
-        const data:TData[] = [] 
+        await scraperManager.createStack(MAX_PRODUCTIONS,mainInstance)
 
-        const {instanceAmount} = await setAmountOfInstances()
+        await scraperManager.createInstances()
 
-        const instacnes = await createInstances(instanceAmount,browser)
+        await scraperManager.startInstances()
 
+        scraperManager.watchStackFinish().then(()=>[
+          saveFile(`./results/${fileName}`,scraperManager.data)
+        ])
+        // const stack = await createStack(MAX_PRODUCTIONS,mainInstance)
 
-        console.log("mainConfig: " + config['mainConfig']);
-        const taskConfig = {stack,config,data}
+        // const data:TData[] = [] 
 
-        await startInstances(instacnes,taskConfig);
+        // const {instanceAmount} = await setAmountOfInstances()
 
-        // console.log(data)
+        // const instacnes = await createInstances(instanceAmount,browser)
+
+        // const taskConfig = {stack,config,data}
+
+        // await startInstances(instacnes,taskConfig);
 
       break;
     default:
       return;
   }
-
-  // console.log(chalk.magentaBright('Starting Browser'));
-  // const { browser, page } = await startBrowser();
 })();

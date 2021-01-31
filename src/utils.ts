@@ -127,6 +127,12 @@ export const startInstances = async (instances: Page[], taskConfig: {stack:strin
   instances.forEach((instance) => {
     const {stack,config,data} = taskConfig
 
-    createTask(stack, instance, config, data);
+    createTask(stack, instance, config, data).finally(()=>{
+      console.log('finish')
+    });
   });
 };
+
+export const stackMonitor = () => {
+
+}

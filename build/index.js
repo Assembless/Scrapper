@@ -41,8 +41,9 @@ var browser_1 = require("./browser");
 var prompts_1 = require("./prompts");
 var utils_1 = require("./utils");
 var miscExtractors_1 = require("./miscExtractors");
+var scraper_1 = require("./scraper");
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var STARTING_URL, actionType, _a, browser, mainInstance, $, pageContent, MAX_PRODUCTIONS, config, configs, configName, fileName, stack, data, instanceAmount, instacnes, taskConfig;
+    var STARTING_URL, actionType, _a, browser, mainInstance, $, pageContent, MAX_PRODUCTIONS, config, configs, configName, fileName, scraperManager;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -115,22 +116,31 @@ var miscExtractors_1 = require("./miscExtractors");
             case 10: return [4 /*yield*/, prompts_1.setFileName()];
             case 11:
                 fileName = (_b.sent()).fileName;
-                return [4 /*yield*/, utils_1.createStack(MAX_PRODUCTIONS, mainInstance)];
+                return [4 /*yield*/, scraper_1.scraper(browser, config)];
             case 12:
-                stack = _b.sent();
-                data = [];
-                return [4 /*yield*/, prompts_1.setAmountOfInstances()];
+                scraperManager = _b.sent();
+                return [4 /*yield*/, scraperManager.createStack(MAX_PRODUCTIONS, mainInstance)];
             case 13:
-                instanceAmount = (_b.sent()).instanceAmount;
-                return [4 /*yield*/, utils_1.createInstances(instanceAmount, browser)];
+                _b.sent();
+                return [4 /*yield*/, scraperManager.createInstances()];
             case 14:
-                instacnes = _b.sent();
-                console.log("mainConfig: " + config['mainConfig']);
-                taskConfig = { stack: stack, config: config, data: data };
-                return [4 /*yield*/, utils_1.startInstances(instacnes, taskConfig)];
+                _b.sent();
+                return [4 /*yield*/, scraperManager.startInstances()
+                    // const stack = await createStack(MAX_PRODUCTIONS,mainInstance)
+                    // const data:TData[] = [] 
+                    // const {instanceAmount} = await setAmountOfInstances()
+                    // const instacnes = await createInstances(instanceAmount,browser)
+                    // const taskConfig = {stack,config,data}
+                    // await startInstances(instacnes,taskConfig);
+                ];
             case 15:
                 _b.sent();
-                // console.log(data)
+                // const stack = await createStack(MAX_PRODUCTIONS,mainInstance)
+                // const data:TData[] = [] 
+                // const {instanceAmount} = await setAmountOfInstances()
+                // const instacnes = await createInstances(instanceAmount,browser)
+                // const taskConfig = {stack,config,data}
+                // await startInstances(instacnes,taskConfig);
                 return [3 /*break*/, 17];
             case 16: return [2 /*return*/];
             case 17: return [2 /*return*/];

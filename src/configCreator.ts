@@ -22,20 +22,6 @@ export const createScrapingConfig = async () => {
     return data.map((e:A) =>e.charAt(0).toLowerCase() + e.slice(1)) as A[]
   }
 
-  // const config = scrappingConfig.map((e: string | string[]) => {
-  //   if (typeof e === "string") {
-  //     const lowerCased = e.charAt(0).toLowerCase() + e.slice(1);
-  //     const noWhiteSpaces = lowerCased.replace(/\s+/g, "");
-  //     return noWhiteSpaces;
-  //   } else {
-  //     return e.map((el) => {
-  //       const lowerCased = el.charAt(0).toLowerCase() + el.slice(1);
-  //       const noWhiteSpaces = lowerCased.replace(/\s+/g, "");
-  //       return noWhiteSpaces;
-  //     });
-  //   }
-  // });
-
   const config: TExtractConfig = {mainConfig: mapToLowerCases(mainConfig),reviewsConfig: mapToLowerCases(reviewConfig) }
   
   console.log(config.mainConfig)

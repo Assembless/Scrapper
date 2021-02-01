@@ -40,14 +40,15 @@ var configCreator_1 = require("./configCreator");
 var browser_1 = require("./browser");
 var prompts_1 = require("./prompts");
 var utils_1 = require("./utils");
-var miscExtractors_1 = require("./miscExtractors");
 var scraper_1 = require("./scraper");
+var logs_1 = require("./logs");
+var STARTING_URL = "https://www.imdb.com/search/title/?companies=co0144901&start=1&ref_=adv_prv";
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var STARTING_URL, actionType, _a, browser, mainInstance, $, pageContent, MAX_PRODUCTIONS, config, configs, configName, fileName, scraperManager;
+    var actionType, _a, browser, mainInstance, $, MAX_PRODUCTIONS, config, configs, configName, fileName_1, scraperManager_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                STARTING_URL = "https://www.imdb.com/search/title/?companies=co0144901&start=1&ref_=adv_prv";
+                logs_1.logs.welcomeMessage;
                 return [4 /*yield*/, prompts_1.selectActionType()];
             case 1:
                 actionType = (_b.sent()).actionType;
@@ -87,7 +88,7 @@ var scraper_1 = require("./scraper");
             // }
             return [3 /*break*/, 17];
             case 3:
-                console.log('Starting browser');
+                console.log('weird');
                 return [4 /*yield*/, browser_1.startBrowser()];
             case 4:
                 browser = _b.sent();
@@ -97,8 +98,7 @@ var scraper_1 = require("./scraper");
                 return [4 /*yield*/, browser_1.goToAndGetHTML(STARTING_URL, mainInstance)];
             case 6:
                 $ = _b.sent();
-                pageContent = $('div#pagecontent');
-                MAX_PRODUCTIONS = miscExtractors_1.miscExtractors.productionCount(pageContent);
+                MAX_PRODUCTIONS = 5683;
                 console.log(MAX_PRODUCTIONS);
                 config = void 0;
                 configs = utils_1.getDirectoryFiles('./queryConfigs/');
@@ -115,32 +115,22 @@ var scraper_1 = require("./scraper");
                 _b.label = 10;
             case 10: return [4 /*yield*/, prompts_1.setFileName()];
             case 11:
-                fileName = (_b.sent()).fileName;
+                fileName_1 = (_b.sent()).fileName;
                 return [4 /*yield*/, scraper_1.scraper(browser, config)];
             case 12:
-                scraperManager = _b.sent();
-                return [4 /*yield*/, scraperManager.createStack(MAX_PRODUCTIONS, mainInstance)];
+                scraperManager_1 = _b.sent();
+                return [4 /*yield*/, scraperManager_1.createStack(MAX_PRODUCTIONS, mainInstance)];
             case 13:
                 _b.sent();
-                return [4 /*yield*/, scraperManager.createInstances()];
+                return [4 /*yield*/, scraperManager_1.createInstances()];
             case 14:
                 _b.sent();
-                return [4 /*yield*/, scraperManager.startInstances()
-                    // const stack = await createStack(MAX_PRODUCTIONS,mainInstance)
-                    // const data:TData[] = [] 
-                    // const {instanceAmount} = await setAmountOfInstances()
-                    // const instacnes = await createInstances(instanceAmount,browser)
-                    // const taskConfig = {stack,config,data}
-                    // await startInstances(instacnes,taskConfig);
-                ];
+                return [4 /*yield*/, scraperManager_1.startInstances()];
             case 15:
                 _b.sent();
-                // const stack = await createStack(MAX_PRODUCTIONS,mainInstance)
-                // const data:TData[] = [] 
-                // const {instanceAmount} = await setAmountOfInstances()
-                // const instacnes = await createInstances(instanceAmount,browser)
-                // const taskConfig = {stack,config,data}
-                // await startInstances(instacnes,taskConfig);
+                scraperManager_1.watchStackFinish().then(function () { return [
+                    utils_1.saveFile("./results/" + fileName_1, scraperManager_1.data)
+                ]; });
                 return [3 /*break*/, 17];
             case 16: return [2 /*return*/];
             case 17: return [2 /*return*/];

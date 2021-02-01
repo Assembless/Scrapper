@@ -1,18 +1,14 @@
-import chalk from "chalk";
-import progressbar from "cli-progress";
-import cheerio from 'cheerio'
 import { createScrapingConfig } from "./configCreator";
 import { createMainInstance, goToAndGetHTML, startBrowser } from "./browser";
-import { contentExtractors } from "./contentExtractors";
-import { chooseFile, chooseFirebaseConfig, newConfigName, saveNewConfig, selectActionType, setAmountOfInstances, setConfig, setFileName, setFirebaseInfo, setProductionNumber, setStartingIndex, whereToUpload } from "./prompts";
-import { createStack, getDirectoryFiles, getFile, saveFile, createInstances, createTask, startInstances } from "./utils";
-import { TData, TExtractConfig } from "./types";
-import { miscExtractors } from "./miscExtractors";
+import { selectActionType, setAmountOfInstances, setConfig, setFileName, setProductionsNumber, setStartingIndex } from "./prompts";
+import { getDirectoryFiles, getFile, saveFile } from "./utils";
+import { TExtractConfig } from "./types";
 import { scraper } from "./scraper";
+import { browserStart, mainInstanceStart, scraperInitialize, stackCreate, welcomeMessage } from "./logs";
 
 (async () => {
+  welcomeMessage();
 
-  const STARTING_URL = "https://www.imdb.com/search/title/?companies=co0144901&start=1&ref_=adv_prv";
   const { actionType } = await selectActionType();
 
   switch (actionType) {
@@ -52,50 +48,38 @@ import { scraper } from "./scraper";
 
       break;
     case "Scrap productions":
-      console.log('Starting browser')
-      const browser = await startBrowser()
-      const mainInstance = await createMainInstance(browser)
-      let $ =  await goToAndGetHTML(STARTING_URL,mainInstance)
-      const pageContent = $('div#pagecontent')
-      const MAX_PRODUCTIONS = 5683;
+      let config: TExtractConfig;
+      const configs: string[] = getDirectoryFiles("./queryConfigs/");
 
-      console.log(MAX_PRODUCTIONS)
+      const { configName } = await setConfig(configs);
 
-      let config: TExtractConfig
-      const configs: string[] = getDirectoryFiles('./queryConfigs/')
-
-      const {configName} = await setConfig(configs)
-
-      if (configName === "Create config"){
-        config = await createScrapingConfig()
-      }else {
-        config = getFile(`./queryConfigs/${configName}`) as TExtractConfig
+      if (configName === "Create config") {
+        config = await createScrapingConfig();
+      } else {
+        config = getFile(`./queryConfigs/${configName}`) as TExtractConfig;
       }
+      const { startingIndex } = await setStartingIndex();
+      const { productionsNumber } = await setProductionsNumber(startingIndex);
+      const { instanceAmount } = await setAmountOfInstances();
 
-        const { fileName } = (await setFileName()) as { fileName: string };
+      const browser = await browserStart(startBrowser);
 
-        const scraperManager = await scraper(browser,config)
+      const mainInstance = await mainInstanceStart(() => createMainInstance(browser));
 
-        await scraperManager.createStack(MAX_PRODUCTIONS,mainInstance)
+      const userInput = {startingIndex,productionsNumber,instanceAmount}
+      const scraperManager = await scraperInitialize(() => scraper(browser, config, userInput));
 
-        await scraperManager.createInstances()
+      await stackCreate(() => scraperManager.createStack(mainInstance));
 
-        await scraperManager.startInstances()
+      await scraperManager.createInstances();
 
-        scraperManager.watchStackFinish().then(()=>[
-          saveFile(`./results/${fileName}`,scraperManager.data)
-        ])
-        // const stack = await createStack(MAX_PRODUCTIONS,mainInstance)
+      scraperManager.displayInstancesStatus();
+      // await scraperManager.startInstances()
 
-        // const data:TData[] = [] 
-
-        // const {instanceAmount} = await setAmountOfInstances()
-
-        // const instacnes = await createInstances(instanceAmount,browser)
-
-        // const taskConfig = {stack,config,data}
-
-        // await startInstances(instacnes,taskConfig);
+      // scraperManager.watchStackFinish().then(()=>[
+      // const { fileName } = (await setFileName()) as { fileName: string };
+      //   saveFile(`./results/${fileName}`,scraperManager.data)
+      // ])
 
       break;
     default:

@@ -1,24 +1,36 @@
-import { resolve } from "path";
 import { Browser, Page } from "puppeteer";
 import { goToAndGetHTML } from "./browser";
 import { contentExtractors } from "./contentExtractors";
 import { miscExtractors } from "./miscExtractors";
-import { setAmountOfInstances, setProductionNumber, setStartingIndex } from "./prompts";
 import { TData, TExtractConfig, TReview } from "./types";
 import { extractUID } from "./utils";
+import { MAX_REVIEWS } from "./constants";
+import ora, { Ora } from "ora";
 
-type TInstance = { name: string; page: Page; status: "disabled" | "active" | "waiting" };
-export const scraper = async (browser: Browser, config: TExtractConfig) => {
-  const { instanceAmount } = await setAmountOfInstances();
+type TInstance = { name: string; page: Page; status: "disabled" | "active" | "waiting"; logger: Ora };
+
+type TScraper = (
+  browser: Browser,
+  config: TExtractConfig,
+  userInput: { startingIndex: number; productionsNumber: number; instanceAmount: number }
+) => Promise<{
+  startInstances: () => Promise<void>;
+  createInstances: () => Promise<void>;
+  createStack: (mainInstance: Page) => Promise<void>;
+  watchStackFinish: () => Promise<void>;
+  displayInstancesStatus: () => void;
+  data: TData[];
+}>;
+
+export const scraper: TScraper = async (browser, config, userInput) => {
   const data: TData[] = [];
   const stack: string[] = [];
   const instances: TInstance[] = [];
-  const MAX_REVIEWS = 1;
+  const { startingIndex, productionsNumber, instanceAmount } = userInput;
 
   const watchStackFinish = (): Promise<void> => {
     return new Promise((resolve) => {
       const interval = setInterval(() => {
-        
         if (stack.length === 0 && instances.findIndex((e) => e.status === "active")) {
           clearInterval(interval);
           resolve();
@@ -27,10 +39,7 @@ export const scraper = async (browser: Browser, config: TExtractConfig) => {
     });
   };
 
-  const createStack = async (maxProductions: number, mainInstance: Page) => {
-    const { startingIndex } = await setStartingIndex(maxProductions);
-    const { productionsNumber } = await setProductionNumber(startingIndex, maxProductions);
-
+  const createStack = async (mainInstance: Page) => {
     for (let i = startingIndex; i < startingIndex + productionsNumber; i += 50) {
       const $ = await goToAndGetHTML(`https://www.imdb.com/search/title/?companies=co0144901&start=${startingIndex}&ref_=adv_prv`, mainInstance);
 
@@ -102,8 +111,15 @@ export const scraper = async (browser: Browser, config: TExtractConfig) => {
   const createInstances = async () => {
     for (let i = 0; i < instanceAmount; i++) {
       const newInstance = await browser.newPage();
-      instances[i] = { name: "Instance#" + i, page: newInstance, status: "disabled" };
+      const newLoger = ora({ spinner: "growHorizontal" });
+      instances[i] = { name: "Instance#" + i, page: newInstance, status: "disabled", logger: newLoger };
     }
+  };
+
+  const displayInstancesStatus = () => {
+    instances.forEach((e) => {
+      e.logger.start(`${e.name}   status:${e.status} \n`);
+    });
   };
 
   const startInstances = async () => {
@@ -112,5 +128,5 @@ export const scraper = async (browser: Browser, config: TExtractConfig) => {
     });
   };
 
-  return { startInstances, createInstances, createStack, watchStackFinish, data };
+  return { startInstances, createInstances, createStack, watchStackFinish, displayInstancesStatus, data };
 };

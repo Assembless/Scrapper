@@ -1,13 +1,32 @@
 import chalk from "chalk";
 import inquirer, { prompt } from "inquirer";
+import {MAX_PRODUCTIONS,PROMPTS_MESSAGES as messages} from './constants'
 
 type TSelectActionType = "Scrap productions" | "Upload data";
+
+const firebaseQuestions = [
+  {
+    type: "input",
+    name: "apiKey",
+    message: messages.setFirebaseInfo.apiKey,
+  },
+  {
+    type: "input",
+    name: "authDomain",
+    message: messages.setFirebaseInfo.authDomain,
+  },
+  {
+    type: "input",
+    name: "projectId",
+    message: messages.setFirebaseInfo.projectId,
+  },
+];
 
 export const selectActionType = async (): Promise<{ actionType: TSelectActionType }> => {
   return await prompt({
     type: "list",
     name: "actionType",
-    message: "What do you want to do ?",
+    message: messages.selectActionType,
     choices: ["Scrap productions", "Upload data"],
   });
 };
@@ -16,21 +35,21 @@ export const setConfig = async (configs: string[]): Promise<{ configName: string
   return await prompt({
     type: "list",
     name: "configName",
-    message: "Which config do you want to use?",
+    message: messages.setConfig,
     choices: [new inquirer.Separator("====== Actions ======"), "Create config", new inquirer.Separator("====== Configs ====== "), ...configs],
   });
 };
 
-export const setStartingIndex = async (maxProductions: number) => {
+export const setStartingIndex = async (): Promise<{ startingIndex: number }> => {
   return await prompt({
     type: "number",
     name: "startingIndex",
-    message: `Type starting index (1 - ${maxProductions})`,
+    message: messages.setStartingIndex,
     default: 1,
     validate: (val) => {
       if (isNaN(val)) {
         return "Your data must be a number";
-      } else if (val > maxProductions || val < 1) {
+      } else if (val > MAX_PRODUCTIONS || val < 1) {
         return "Your number is out of bounds";
       } else {
         return true;
@@ -38,25 +57,25 @@ export const setStartingIndex = async (maxProductions: number) => {
     },
   });
 };
-export const setFileName = async () => {
+export const setFileName = async (): Promise<{ fileName:string }> => {
   return await prompt({
     type: "input",
     name: "fileName",
-    message: `Type file name to save`,
+    message: messages.setFileName,
     default: "data",
   });
 };
 
-export const setProductionNumber = async (startingIndex: number, maxProductions: number) => {
+export const setProductionsNumber = async (startingIndex: number): Promise<{ productionsNumber: number }> => {
   return await prompt({
     type: "number",
     name: "productionsNumber",
-    message: `How many productions would you like to scrap ( 1 - ${maxProductions - startingIndex}) ? `,
+    message: `${messages.setProductionsNumber} ( 1 - ${MAX_PRODUCTIONS - startingIndex}) ? `,
     default: 1,
     validate: (val) => {
       if (isNaN(val)) {
         return "Your data must be a number";
-      } else if (val < 0 || val > maxProductions - startingIndex) {
+      } else if (val < 0 || val > MAX_PRODUCTIONS - startingIndex) {
         return "Your number is out of bounds";
       } else {
         return true;
@@ -65,93 +84,59 @@ export const setProductionNumber = async (startingIndex: number, maxProductions:
   });
 };
 
-export const setReviewsNumber = async () => {
-  return await prompt({
-    type: "number",
-    name: "reviewsNumber",
-    message: `How much reviews would you like to fetch ? (1 - 25)`,
-    validate: (val) => {
-      if (isNaN(val)) {
-        return "Your data must be a number";
-      } else if (val > 25 || val < 0) {
-        return "Your number is out of bounds";
-      } else {
-        return true;
-      }
-    },
-  });
-};
 
-export const chooseFile = async (files: string[]) => {
+export const chooseFile = async (files: string[]): Promise<{ file: string }> => {
   return await prompt({
     type: "list",
     name: "file",
-    message: `What file would you like to upload ? `,
+    message: messages.chooseFile,
     choices: files,
   });
 };
 
-export const whereToUpload = async () => {
+export const whereToUpload = async (): Promise<{ destination: 'firebase' }> => {
   return await prompt({
     type: "list",
     name: "destination",
-    message: `Where would you like to upload your file ? `,
+    message: messages.whereToUpload,
     choices: ["firebase"],
   });
 };
 
-const firebaseQuestions = [
-  {
-    type: "input",
-    name: "apiKey",
-    message: "ApiKey:",
-  },
-  {
-    type: "input",
-    name: "authDomain",
-    message: "AuthDomain:",
-  },
-  {
-    type: "input",
-    name: "projectId",
-    message: "projectID:",
-  },
-];
-
-export const chooseFirebaseConfig = async (files: string[]) => {
+export const chooseFirebaseConfig = async (files: string[]): Promise<{ firebaseConfig: string | 'Create new config' }> => {
   return await prompt({
     type: "list",
     name: "firebaseConfig",
-    message: "Choose firebase config",
-    choices: [...files, "create new config"],
+    message: messages.chooseFirebaseConfig,
+    choices: [...files, "Create new config"],
   });
 };
-export const saveNewConfig = async () => {
+export const saveNewConfig = async (): Promise<{ saveInfo: boolean }> => {
   return await prompt({
     type: "confirm",
     name: "saveInfo",
-    message: "Do you like to save your config for future ? ",
+    message: messages.saveNewConfig,
     default: true,
   });
 };
 
-export const newConfigName = async () => {
+export const newConfigName = async (): Promise<{ configName: string }> => {
   return await prompt({
     type: "input",
     name: "configName",
-    message: "What would be a name for your new config ? ",
+    message: messages.newConfigName,
   });
 };
-export const setAmountOfInstances = async () => {
+export const setAmountOfInstances = async (): Promise<{ instanceAmount: number }> => {
   return await prompt({
     type: "number",
     name: "instanceAmount",
-    message: "How many instances would you like to run? ",
+    message: messages.setAmountOfInstances,
     validate: (val) => {
       if (isNaN(val)) {
         return "Please type number";
-      }else if(val <= 0){
-        return 'Number must be higher than 0'
+      } else if (val <= 0) {
+        return "Number must be higher than 0";
       } else {
         return true;
       }
@@ -159,6 +144,6 @@ export const setAmountOfInstances = async () => {
   });
 };
 
-export const setFirebaseInfo = async () => {
+export const setFirebaseInfo = async (): Promise<{ apiKey: string; authDomain: string; projectId:string }> => {
   return await prompt(firebaseQuestions);
 };

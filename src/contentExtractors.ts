@@ -7,8 +7,13 @@ const title = (html: cheerio.Cheerio): string => {
 
 const year = (html: cheerio.Cheerio): string => {
   const data = html.find("div.subtext a").last().text().trim().split('(');
+  console.log(data)
   const removedBracket = data[1].slice(0, data[1].length - 1).trim();
-  return removedBracket
+
+  if (isNaN(parseInt(removedBracket))){
+    const splitedData = data[0].split(' ')
+    return splitedData[2].trim()
+  }else return removedBracket;
 };
 const director = (html: cheerio.Cheerio): string => {
   const data = html

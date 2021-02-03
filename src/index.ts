@@ -73,13 +73,12 @@ import { browserStart, mainInstanceStart, scraperInitialize, stackCreate, welcom
 
       await scraperManager.createInstances();
 
-      scraperManager.displayInstancesStatus();
-      // await scraperManager.startInstances()
+      await scraperManager.startInstances()
 
-      // scraperManager.watchStackFinish().then(()=>[
-      // const { fileName } = (await setFileName()) as { fileName: string };
-      //   saveFile(`./results/${fileName}`,scraperManager.data)
-      // ])
+      scraperManager.watchStackFinish().then(async ()=>{
+      const { fileName } = (await setFileName()) as { fileName: string };
+        saveFile(`./results/${fileName}`,scraperManager.data)
+      })
 
       break;
     default:

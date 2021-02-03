@@ -5,9 +5,11 @@ import { miscExtractors } from "./miscExtractors";
 import { TData, TExtractConfig, TReview } from "./types";
 import { extractUID } from "./utils";
 import { MAX_REVIEWS } from "./constants";
-import ora, { Ora } from "ora";
+import { textGreen, textRed, textWhite, textYellow } from "./styles";
 
-type TInstance = { name: string; page: Page; status: "disabled" | "active" | "waiting"; logger: Ora };
+type TStatus = "disabled" | "active" | "waiting";
+
+type TInstance = { name: string; page: Page; status: TStatus; logger: (task?: string) => void };
 
 type TScraper = (
   browser: Browser,
@@ -18,20 +20,21 @@ type TScraper = (
   createInstances: () => Promise<void>;
   createStack: (mainInstance: Page) => Promise<void>;
   watchStackFinish: () => Promise<void>;
-  displayInstancesStatus: () => void;
   data: TData[];
 }>;
 
 export const scraper: TScraper = async (browser, config, userInput) => {
   const data: TData[] = [];
   const stack: string[] = [];
+  let stackLength: number;
   const instances: TInstance[] = [];
   const { startingIndex, productionsNumber, instanceAmount } = userInput;
 
   const watchStackFinish = (): Promise<void> => {
     return new Promise((resolve) => {
       const interval = setInterval(() => {
-        if (stack.length === 0 && instances.findIndex((e) => e.status === "active")) {
+        const test = instances.filter((e) => e.status === "active")
+        if (stack.length === 0 && !test.length) {
           clearInterval(interval);
           resolve();
         }
@@ -53,17 +56,19 @@ export const scraper: TScraper = async (browser, config, userInput) => {
         stack.push(productionPageLink);
       }
     }
+
+    stackLength = stack.length;
   };
 
   const createTask = async (instance: TInstance) => {
-    if ((instance.status = "disabled")) {
-      instance.status = "active";
-    }
     const page = instance.page;
 
     const stackItem = stack.shift()!;
 
     const uid = extractUID(stackItem);
+
+    instance.status = "active";
+    instance.logger(`${uid} (${stackLength - stack.length} / ${stackLength})`);
 
     let productionData: TData = { uid };
 
@@ -102,24 +107,44 @@ export const scraper: TScraper = async (browser, config, userInput) => {
     if (stack.length === 0) {
       await page.close();
       instance.status = "disabled";
+      instance.logger();
       return;
     } else {
+      instance.status = "waiting";
+      instance.logger();
       createTask(instance);
     }
   };
 
   const createInstances = async () => {
     for (let i = 0; i < instanceAmount; i++) {
-      const newInstance = await browser.newPage();
-      const newLoger = ora({ spinner: "growHorizontal" });
-      instances[i] = { name: "Instance#" + i, page: newInstance, status: "disabled", logger: newLoger };
-    }
-  };
+      const newPage = await browser.newPage();
 
-  const displayInstancesStatus = () => {
-    instances.forEach((e) => {
-      e.logger.start(`${e.name}   status:${e.status} \n`);
-    });
+      const newInstance: TInstance = {
+        name: "Instance#" + i,
+        page: newPage,
+        status: "disabled",
+        logger: (task?: string) => {
+          const switchResult = () => {
+            switch (newInstance.status) {
+              case "active":
+                return textGreen(newInstance.status);
+              case "disabled":
+                return textRed(newInstance.status);
+              case "waiting":
+                return textYellow(newInstance.status);
+              default:
+              case "disabled":
+                return textRed(newInstance.status);
+            }
+          };
+          const status = switchResult();
+          console.log(textWhite(`${newInstance.name}   status: ${textRed(status)}   ${task ? `task: ${task}` : " "}`));
+        },
+      };
+      instances[i] = newInstance;
+      newInstance.logger();
+    }
   };
 
   const startInstances = async () => {
@@ -128,5 +153,5 @@ export const scraper: TScraper = async (browser, config, userInput) => {
     });
   };
 
-  return { startInstances, createInstances, createStack, watchStackFinish, displayInstancesStatus, data };
+  return { startInstances, createInstances, createStack, watchStackFinish, data };
 };

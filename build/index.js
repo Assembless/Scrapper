@@ -42,13 +42,12 @@ var prompts_1 = require("./prompts");
 var utils_1 = require("./utils");
 var scraper_1 = require("./scraper");
 var logs_1 = require("./logs");
-var STARTING_URL = "https://www.imdb.com/search/title/?companies=co0144901&start=1&ref_=adv_prv";
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var actionType, _a, browser, mainInstance, $, MAX_PRODUCTIONS, config, configs, configName, fileName_1, scraperManager_1;
+    var actionType, _a, config_1, configs, configName, startingIndex, productionsNumber, instanceAmount, browser_2, mainInstance_1, userInput_1, scraperManager_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                logs_1.logs.welcomeMessage;
+                logs_1.welcomeMessage();
                 return [4 /*yield*/, prompts_1.selectActionType()];
             case 1:
                 actionType = (_b.sent()).actionType;
@@ -57,7 +56,7 @@ var STARTING_URL = "https://www.imdb.com/search/title/?companies=co0144901&start
                     case "Upload data": return [3 /*break*/, 2];
                     case "Scrap productions": return [3 /*break*/, 3];
                 }
-                return [3 /*break*/, 16];
+                return [3 /*break*/, 17];
             case 2: 
             // const files = getDirectoryFiles("./results/");
             // const {file} = await chooseFile(files)
@@ -86,54 +85,63 @@ var STARTING_URL = "https://www.imdb.com/search/title/?companies=co0144901&start
             //     }
             //   }
             // }
-            return [3 /*break*/, 17];
+            return [3 /*break*/, 18];
             case 3:
-                console.log('weird');
-                return [4 /*yield*/, browser_1.startBrowser()];
-            case 4:
-                browser = _b.sent();
-                return [4 /*yield*/, browser_1.createMainInstance(browser)];
-            case 5:
-                mainInstance = _b.sent();
-                return [4 /*yield*/, browser_1.goToAndGetHTML(STARTING_URL, mainInstance)];
-            case 6:
-                $ = _b.sent();
-                MAX_PRODUCTIONS = 5683;
-                console.log(MAX_PRODUCTIONS);
-                config = void 0;
-                configs = utils_1.getDirectoryFiles('./queryConfigs/');
+                configs = utils_1.getDirectoryFiles("./queryConfigs/");
                 return [4 /*yield*/, prompts_1.setConfig(configs)];
-            case 7:
+            case 4:
                 configName = (_b.sent()).configName;
-                if (!(configName === "Create config")) return [3 /*break*/, 9];
+                if (!(configName === "Create config")) return [3 /*break*/, 6];
                 return [4 /*yield*/, configCreator_1.createScrapingConfig()];
+            case 5:
+                config_1 = _b.sent();
+                return [3 /*break*/, 7];
+            case 6:
+                config_1 = utils_1.getFile("./queryConfigs/" + configName);
+                _b.label = 7;
+            case 7: return [4 /*yield*/, prompts_1.setStartingIndex()];
             case 8:
-                config = _b.sent();
-                return [3 /*break*/, 10];
+                startingIndex = (_b.sent()).startingIndex;
+                return [4 /*yield*/, prompts_1.setProductionsNumber(startingIndex)];
             case 9:
-                config = utils_1.getFile("./queryConfigs/" + configName);
-                _b.label = 10;
-            case 10: return [4 /*yield*/, prompts_1.setFileName()];
+                productionsNumber = (_b.sent()).productionsNumber;
+                return [4 /*yield*/, prompts_1.setAmountOfInstances()];
+            case 10:
+                instanceAmount = (_b.sent()).instanceAmount;
+                return [4 /*yield*/, logs_1.browserStart(browser_1.startBrowser)];
             case 11:
-                fileName_1 = (_b.sent()).fileName;
-                return [4 /*yield*/, scraper_1.scraper(browser, config)];
+                browser_2 = _b.sent();
+                return [4 /*yield*/, logs_1.mainInstanceStart(function () { return browser_1.createMainInstance(browser_2); })];
             case 12:
-                scraperManager_1 = _b.sent();
-                return [4 /*yield*/, scraperManager_1.createStack(MAX_PRODUCTIONS, mainInstance)];
+                mainInstance_1 = _b.sent();
+                userInput_1 = { startingIndex: startingIndex, productionsNumber: productionsNumber, instanceAmount: instanceAmount };
+                return [4 /*yield*/, logs_1.scraperInitialize(function () { return scraper_1.scraper(browser_2, config_1, userInput_1); })];
             case 13:
-                _b.sent();
-                return [4 /*yield*/, scraperManager_1.createInstances()];
+                scraperManager_1 = _b.sent();
+                return [4 /*yield*/, logs_1.stackCreate(function () { return scraperManager_1.createStack(mainInstance_1); })];
             case 14:
                 _b.sent();
-                return [4 /*yield*/, scraperManager_1.startInstances()];
+                return [4 /*yield*/, scraperManager_1.createInstances()];
             case 15:
                 _b.sent();
-                scraperManager_1.watchStackFinish().then(function () { return [
-                    utils_1.saveFile("./results/" + fileName_1, scraperManager_1.data)
-                ]; });
-                return [3 /*break*/, 17];
-            case 16: return [2 /*return*/];
+                return [4 /*yield*/, scraperManager_1.startInstances()];
+            case 16:
+                _b.sent();
+                scraperManager_1.watchStackFinish().then(function () { return __awaiter(void 0, void 0, void 0, function () {
+                    var fileName;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, prompts_1.setFileName()];
+                            case 1:
+                                fileName = (_a.sent()).fileName;
+                                utils_1.saveFile("./results/" + fileName, scraperManager_1.data);
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                return [3 /*break*/, 18];
             case 17: return [2 /*return*/];
+            case 18: return [2 /*return*/];
         }
     });
 }); })();

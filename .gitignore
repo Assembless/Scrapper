@@ -4,3 +4,4 @@ firebaseConfigs
 queryConfigs
 build
 
+build/index.js

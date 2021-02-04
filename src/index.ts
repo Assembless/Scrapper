@@ -16,9 +16,12 @@ import { TData, TExtractConfig } from "./types";
 import { scraper } from "./scraper";
 import { browserStart, mainInstanceStart, scraperInitialize, stackCreate, welcomeMessage } from "./logs";
 import { createNewFirebaseConfig, firebaseManager, TFirebaseInfo } from "./firebase";
+import { textWhite } from "./styles";
 
-(async () => {
-  welcomeMessage();
+welcomeMessage();
+
+
+const Main = async () => {
 
   const { actionType } = await selectActionType();
 
@@ -52,8 +55,8 @@ import { createNewFirebaseConfig, firebaseManager, TFirebaseInfo } from "./fireb
         firebase.saveToFirestore()
 
       }
-
-      break;
+      Main()
+      return
     case "Scrap productions":
       let config: TExtractConfig;
       const configs: string[] = getDirectoryFiles("./queryConfigs/");
@@ -87,9 +90,15 @@ import { createNewFirebaseConfig, firebaseManager, TFirebaseInfo } from "./fireb
         saveFile(`./results/${fileName}`, scraperManager.data);
       });
 
+      Main()
       return
+    case 'Exit':
+      console.log(textWhite('See you later'))
+      process.exit()
     default:
-      return;
+      Main();
+      return
   }
-  return
-})();
+};
+
+Main()

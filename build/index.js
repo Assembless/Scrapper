@@ -43,21 +43,22 @@ var utils_1 = require("./utils");
 var scraper_1 = require("./scraper");
 var logs_1 = require("./logs");
 var firebase_1 = require("./firebase");
-(function () { return __awaiter(void 0, void 0, void 0, function () {
+var styles_1 = require("./styles");
+logs_1.welcomeMessage();
+var Main = function () { return __awaiter(void 0, void 0, void 0, function () {
     var actionType, _a, files, file, data, destination, config_1, firebaseConfigs, firebaseConfig, firebase_2, config_2, configs, configName, startingIndex, productionsNumber, instanceAmount, browser_2, mainInstance_1, userInput_1, scraperManager_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
-            case 0:
-                logs_1.welcomeMessage();
-                return [4 /*yield*/, prompts_1.selectActionType()];
+            case 0: return [4 /*yield*/, prompts_1.selectActionType()];
             case 1:
                 actionType = (_b.sent()).actionType;
                 _a = actionType;
                 switch (_a) {
                     case "Upload data": return [3 /*break*/, 2];
                     case "Scrap productions": return [3 /*break*/, 13];
+                    case 'Exit': return [3 /*break*/, 27];
                 }
-                return [3 /*break*/, 27];
+                return [3 /*break*/, 28];
             case 2:
                 files = utils_1.getDirectoryFiles("./results/");
                 return [4 /*yield*/, prompts_1.chooseFile(files)];
@@ -91,7 +92,9 @@ var firebase_1 = require("./firebase");
                 firebase_2 = firebase_1.firebaseManager(config_1, data);
                 firebase_2.saveToFirestore();
                 _b.label = 12;
-            case 12: return [3 /*break*/, 28];
+            case 12:
+                Main();
+                return [2 /*return*/];
             case 13:
                 configs = utils_1.getDirectoryFiles("./queryConfigs/");
                 return [4 /*yield*/, prompts_1.setConfig(configs)];
@@ -145,9 +148,16 @@ var firebase_1 = require("./firebase");
                         }
                     });
                 }); });
+                Main();
                 return [2 /*return*/];
-            case 27: return [2 /*return*/];
-            case 28: return [2 /*return*/];
+            case 27:
+                console.log(styles_1.textWhite('See you later'));
+                process.exit();
+                _b.label = 28;
+            case 28:
+                Main();
+                return [2 /*return*/];
         }
     });
-}); })();
+}); };
+Main();

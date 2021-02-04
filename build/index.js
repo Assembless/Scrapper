@@ -42,8 +42,9 @@ var prompts_1 = require("./prompts");
 var utils_1 = require("./utils");
 var scraper_1 = require("./scraper");
 var logs_1 = require("./logs");
+var firebase_1 = require("./firebase");
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var actionType, _a, config_1, configs, configName, startingIndex, productionsNumber, instanceAmount, browser_2, mainInstance_1, userInput_1, scraperManager_1;
+    var actionType, _a, files, file, data, destination, config_1, firebaseConfigs, firebaseConfig, firebase_2, config_2, configs, configName, startingIndex, productionsNumber, instanceAmount, browser_2, mainInstance_1, userInput_1, scraperManager_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -54,78 +55,83 @@ var logs_1 = require("./logs");
                 _a = actionType;
                 switch (_a) {
                     case "Upload data": return [3 /*break*/, 2];
-                    case "Scrap productions": return [3 /*break*/, 3];
+                    case "Scrap productions": return [3 /*break*/, 13];
                 }
-                return [3 /*break*/, 17];
-            case 2: 
-            // const files = getDirectoryFiles("./results/");
-            // const {file} = await chooseFile(files)
-            // const data = getFile(`./results/${file}`);
-            // const { destination } = await whereToUpload();
-            // if (destination === "firebase") {
-            //   const firebaseConfigs = getDirectoryFiles("./firebaseConfigs/");
-            //   if (firebaseConfigs.length > 0) {
-            //     const { firebaseConfig } = await chooseFirebaseConfig(firebaseConfigs);
-            //     if (firebaseConfig === "create new config") {
-            //       const { apiKey, authDomain, projectId } = await setFirebaseInfo();
-            //       const { saveInfo } = await saveNewConfig();
-            //       if (saveInfo) {
-            //         const { configName } = await newConfigName();
-            //         saveFile(`./firebaseConfigs/${configName}`, { apiKey, authDomain, projectId });
-            //       }
-            //     } else {
-            //       const { apiKey, authDomain, projectId } = getFile(`./firebaseConfigs/${firebaseConfig}`) as { apiKey: string; authDomain: string; projectId: string };
-            //     }
-            //   } else {
-            //     const { apiKey, authDomain, projectId } = await setFirebaseInfo();
-            //     const { saveInfo } = await saveNewConfig();
-            //     if (saveInfo) {
-            //       const { configName } = await newConfigName();
-            //       saveFile(`./firebaseConfigs/${configName}`, { apiKey, authDomain, projectId });
-            //     }
-            //   }
-            // }
-            return [3 /*break*/, 18];
+                return [3 /*break*/, 27];
+            case 2:
+                files = utils_1.getDirectoryFiles("./results/");
+                return [4 /*yield*/, prompts_1.chooseFile(files)];
             case 3:
+                file = (_b.sent()).file;
+                data = utils_1.getFile("./results/" + file);
+                return [4 /*yield*/, prompts_1.whereToUpload()];
+            case 4:
+                destination = (_b.sent()).destination;
+                if (!(destination === "firebase")) return [3 /*break*/, 12];
+                firebaseConfigs = utils_1.getDirectoryFiles("./firebaseConfigs/");
+                if (!(firebaseConfigs.length > 0)) return [3 /*break*/, 9];
+                return [4 /*yield*/, prompts_1.chooseFirebaseConfig(firebaseConfigs)];
+            case 5:
+                firebaseConfig = (_b.sent()).firebaseConfig;
+                if (!(firebaseConfig === "create new config")) return [3 /*break*/, 7];
+                return [4 /*yield*/, firebase_1.createNewFirebaseConfig()];
+            case 6:
+                config_1 = _b.sent();
+                return [3 /*break*/, 8];
+            case 7:
+                config_1 = utils_1.getFile("./firebaseConfigs/" + firebaseConfig);
+                _b.label = 8;
+            case 8: return [3 /*break*/, 11];
+            case 9: return [4 /*yield*/, firebase_1.createNewFirebaseConfig()];
+            case 10:
+                config_1 = _b.sent();
+                _b.label = 11;
+            case 11:
+                console.log(data);
+                firebase_2 = firebase_1.firebaseManager(config_1, data);
+                firebase_2.saveToFirestore();
+                _b.label = 12;
+            case 12: return [3 /*break*/, 28];
+            case 13:
                 configs = utils_1.getDirectoryFiles("./queryConfigs/");
                 return [4 /*yield*/, prompts_1.setConfig(configs)];
-            case 4:
+            case 14:
                 configName = (_b.sent()).configName;
-                if (!(configName === "Create config")) return [3 /*break*/, 6];
+                if (!(configName === "Create config")) return [3 /*break*/, 16];
                 return [4 /*yield*/, configCreator_1.createScrapingConfig()];
-            case 5:
-                config_1 = _b.sent();
-                return [3 /*break*/, 7];
-            case 6:
-                config_1 = utils_1.getFile("./queryConfigs/" + configName);
-                _b.label = 7;
-            case 7: return [4 /*yield*/, prompts_1.setStartingIndex()];
-            case 8:
+            case 15:
+                config_2 = _b.sent();
+                return [3 /*break*/, 17];
+            case 16:
+                config_2 = utils_1.getFile("./queryConfigs/" + configName);
+                _b.label = 17;
+            case 17: return [4 /*yield*/, prompts_1.setStartingIndex()];
+            case 18:
                 startingIndex = (_b.sent()).startingIndex;
                 return [4 /*yield*/, prompts_1.setProductionsNumber(startingIndex)];
-            case 9:
+            case 19:
                 productionsNumber = (_b.sent()).productionsNumber;
                 return [4 /*yield*/, prompts_1.setAmountOfInstances()];
-            case 10:
+            case 20:
                 instanceAmount = (_b.sent()).instanceAmount;
                 return [4 /*yield*/, logs_1.browserStart(browser_1.startBrowser)];
-            case 11:
+            case 21:
                 browser_2 = _b.sent();
                 return [4 /*yield*/, logs_1.mainInstanceStart(function () { return browser_1.createMainInstance(browser_2); })];
-            case 12:
+            case 22:
                 mainInstance_1 = _b.sent();
                 userInput_1 = { startingIndex: startingIndex, productionsNumber: productionsNumber, instanceAmount: instanceAmount };
-                return [4 /*yield*/, logs_1.scraperInitialize(function () { return scraper_1.scraper(browser_2, config_1, userInput_1); })];
-            case 13:
+                return [4 /*yield*/, logs_1.scraperInitialize(function () { return scraper_1.scraper(browser_2, config_2, userInput_1); })];
+            case 23:
                 scraperManager_1 = _b.sent();
                 return [4 /*yield*/, logs_1.stackCreate(function () { return scraperManager_1.createStack(mainInstance_1); })];
-            case 14:
+            case 24:
                 _b.sent();
                 return [4 /*yield*/, scraperManager_1.createInstances()];
-            case 15:
+            case 25:
                 _b.sent();
                 return [4 /*yield*/, scraperManager_1.startInstances()];
-            case 16:
+            case 26:
                 _b.sent();
                 scraperManager_1.watchStackFinish().then(function () { return __awaiter(void 0, void 0, void 0, function () {
                     var fileName;
@@ -139,9 +145,9 @@ var logs_1 = require("./logs");
                         }
                     });
                 }); });
-                return [3 /*break*/, 18];
-            case 17: return [2 /*return*/];
-            case 18: return [2 /*return*/];
+                return [2 /*return*/];
+            case 27: return [2 /*return*/];
+            case 28: return [2 /*return*/];
         }
     });
 }); })();

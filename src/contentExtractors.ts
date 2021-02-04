@@ -6,14 +6,32 @@ const title = (html: cheerio.Cheerio): string => {
 };
 
 const year = (html: cheerio.Cheerio): string => {
-  const data = html.find("div.subtext a").last().text().trim().split('(');
-  console.log(data)
-  const removedBracket = data[1].slice(0, data[1].length - 1).trim();
-
-  if (isNaN(parseInt(removedBracket))){
-    const splitedData = data[0].split(' ')
-    return splitedData[2].trim()
-  }else return removedBracket;
+  // const data = html
+  //   .find("div.subtext a")
+  //   .last()
+  //   .text()
+  //   .replace(/(?!-)[^0-9.]/g, "")
+  //   .trim();
+  // console.log(data)
+  // return data;
+  const splitted = html.find("div.subtext a").last().text().trim().split(' ');
+  console.log(splitted)
+  const numbersOnly = splitted.map((e) => e.replace(/[^\d–]+/g, ""));
+  console.log(numbersOnly)
+  const filtered = numbersOnly.filter(e=> {
+    return e.length === 4 || e.length === 5 || e.length === 9
+  })
+  console.log(filtered[0])
+  return filtered[0]
+  // console.log(data)
+  // if(data[0] === ''){
+  //   return 'No data'
+  // }
+  // const removedBracket = data.length > 1 ?  data[1].slice(0, data[1].length - 1).trim() :' No data';
+  // if (isNaN(parseInt(removedBracket)) && removedBracket !== 'No data'){
+  //   const splitedData = data[0].split(' ')
+  //   return splitedData[2].trim()
+  // }else return removedBracket;
 };
 const director = (html: cheerio.Cheerio): string => {
   const data = html

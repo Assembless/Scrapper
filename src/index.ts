@@ -1,10 +1,21 @@
 import { createScrapingConfig } from "./configCreator";
 import { createMainInstance, goToAndGetHTML, startBrowser } from "./browser";
-import { selectActionType, setAmountOfInstances, setConfig, setFileName, setProductionsNumber, setStartingIndex } from "./prompts";
+import {
+  chooseFile,
+  chooseFirebaseConfig,
+  selectActionType,
+  setAmountOfInstances,
+  setConfig,
+  setFileName,
+  setProductionsNumber,
+  setStartingIndex,
+  whereToUpload,
+} from "./prompts";
 import { getDirectoryFiles, getFile, saveFile } from "./utils";
-import { TExtractConfig } from "./types";
+import { TData, TExtractConfig } from "./types";
 import { scraper } from "./scraper";
 import { browserStart, mainInstanceStart, scraperInitialize, stackCreate, welcomeMessage } from "./logs";
+import { createNewFirebaseConfig, firebaseManager, TFirebaseInfo } from "./firebase";
 
 (async () => {
   welcomeMessage();
@@ -13,38 +24,34 @@ import { browserStart, mainInstanceStart, scraperInitialize, stackCreate, welcom
 
   switch (actionType) {
     case "Upload data":
-      // const files = getDirectoryFiles("./results/");
-      // const {file} = await chooseFile(files)
+      const files = getDirectoryFiles("./results/");
+      const { file } = await chooseFile(files);
 
-      // const data = getFile(`./results/${file}`);
+      const data = getFile(`./results/${file}`) as TData[];
 
-      // const { destination } = await whereToUpload();
+      const { destination } = await whereToUpload();
 
-      // if (destination === "firebase") {
-      //   const firebaseConfigs = getDirectoryFiles("./firebaseConfigs/");
-      //   if (firebaseConfigs.length > 0) {
-      //     const { firebaseConfig } = await chooseFirebaseConfig(firebaseConfigs);
-      //     if (firebaseConfig === "create new config") {
-      //       const { apiKey, authDomain, projectId } = await setFirebaseInfo();
-      //       const { saveInfo } = await saveNewConfig();
+      if (destination === "firebase") {
+        let config: TFirebaseInfo;
 
-      //       if (saveInfo) {
-      //         const { configName } = await newConfigName();
-      //         saveFile(`./firebaseConfigs/${configName}`, { apiKey, authDomain, projectId });
-      //       }
-      //     } else {
-      //       const { apiKey, authDomain, projectId } = getFile(`./firebaseConfigs/${firebaseConfig}`) as { apiKey: string; authDomain: string; projectId: string };
-      //     }
-      //   } else {
-      //     const { apiKey, authDomain, projectId } = await setFirebaseInfo();
-      //     const { saveInfo } = await saveNewConfig();
+        const firebaseConfigs = getDirectoryFiles("./firebaseConfigs/");
+        if (firebaseConfigs.length > 0) {
+          const { firebaseConfig } = await chooseFirebaseConfig(firebaseConfigs);
+          if (firebaseConfig === "create new config") {
+            config = await createNewFirebaseConfig();
+          } else {
+            config = getFile(`./firebaseConfigs/${firebaseConfig}`) as TFirebaseInfo;
+          }
+        } else {
+          config = await createNewFirebaseConfig();
+        }
 
-      //     if (saveInfo) {
-      //       const { configName } = await newConfigName();
-      //       saveFile(`./firebaseConfigs/${configName}`, { apiKey, authDomain, projectId });
-      //     }
-      //   }
-      // }
+        console.log(data)
+        const firebase = firebaseManager(config,data)
+
+        firebase.saveToFirestore()
+
+      }
 
       break;
     case "Scrap productions":
@@ -66,22 +73,23 @@ import { browserStart, mainInstanceStart, scraperInitialize, stackCreate, welcom
 
       const mainInstance = await mainInstanceStart(() => createMainInstance(browser));
 
-      const userInput = {startingIndex,productionsNumber,instanceAmount}
+      const userInput = { startingIndex, productionsNumber, instanceAmount };
       const scraperManager = await scraperInitialize(() => scraper(browser, config, userInput));
 
       await stackCreate(() => scraperManager.createStack(mainInstance));
 
       await scraperManager.createInstances();
 
-      await scraperManager.startInstances()
+      await scraperManager.startInstances();
 
-      scraperManager.watchStackFinish().then(async ()=>{
-      const { fileName } = (await setFileName()) as { fileName: string };
-        saveFile(`./results/${fileName}`,scraperManager.data)
-      })
+      scraperManager.watchStackFinish().then(async () => {
+        const { fileName } = (await setFileName()) as { fileName: string };
+        saveFile(`./results/${fileName}`, scraperManager.data);
+      });
 
-      break;
+      return
     default:
       return;
   }
+  return
 })();

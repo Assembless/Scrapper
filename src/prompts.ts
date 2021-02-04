@@ -111,6 +111,13 @@ export const chooseFirebaseConfig = async (files: string[]): Promise<{ firebaseC
     choices: [...files, "Create new config"],
   });
 };
+export const firebaseCollectionName = async (): Promise<{ collectionName: string }> => {
+  return await prompt({
+    type: "input",
+    name: "collectionName",
+    message: messages.firebaseCollectionName,
+  });
+};
 export const saveNewConfig = async (): Promise<{ saveInfo: boolean }> => {
   return await prompt({
     type: "confirm",

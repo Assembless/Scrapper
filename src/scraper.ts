@@ -33,7 +33,7 @@ export const scraper: TScraper = async (browser, config, userInput) => {
   const watchStackFinish = (): Promise<void> => {
     return new Promise((resolve) => {
       const interval = setInterval(() => {
-        const test = instances.filter((e) => e.status === "active")
+        const test = instances.filter((e) => e.status === "active");
         if (stack.length === 0 && !test.length) {
           clearInterval(interval);
           resolve();
@@ -44,7 +44,7 @@ export const scraper: TScraper = async (browser, config, userInput) => {
 
   const createStack = async (mainInstance: Page) => {
     for (let i = startingIndex; i < startingIndex + productionsNumber; i += 50) {
-      const $ = await goToAndGetHTML(`https://www.imdb.com/search/title/?companies=co0144901&start=${startingIndex}&ref_=adv_prv`, mainInstance);
+      const $ = await goToAndGetHTML(`https://www.imdb.com/search/title/?companies=co0144901&start=${i}&ref_=adv_prv`, mainInstance);
 
       const elements = $("div.lister-list div.lister-item.mode-advanced");
 
@@ -56,14 +56,22 @@ export const scraper: TScraper = async (browser, config, userInput) => {
         stack.push(productionPageLink);
       }
     }
-
     stackLength = stack.length;
   };
 
   const createTask = async (instance: TInstance) => {
+    if (stack.length <= 0) return;
+
     const page = instance.page;
 
     const stackItem = stack.shift()!;
+
+    if (stackItem === "undefined") {
+      instance.status = "waiting";
+      instance.logger();
+      createTask(instance);
+      return;
+    }
 
     const uid = extractUID(stackItem);
 
@@ -85,29 +93,34 @@ export const scraper: TScraper = async (browser, config, userInput) => {
 
     if (reviewsConfig.length > 0) {
       const link = miscExtractors.reviewsPage(HTML)!;
-      $ = await goToAndGetHTML(link, page);
 
-      const reviewsHTML = $("div#pagecontent");
-      const reviews = miscExtractors.reviews(reviewsHTML).slice(0, MAX_REVIEWS);
+      if (link === undefined) {
+        productionData = { ...productionData, reviews: [] };
+      } else {
+        $ = await goToAndGetHTML(link, page);
 
-      const reviewsData: TReview[] = [];
+        const reviewsHTML = $("div#pagecontent");
+        const reviews = miscExtractors.reviews(reviewsHTML).slice(0, MAX_REVIEWS);
 
-      reviews.each((j, e) => {
-        let reviewData: TReview = {};
-        reviewsConfig.forEach((el) => {
-          const result = contentExtractors.review[el](e);
-          reviewData = { ...reviewData, [el]: result };
+        const reviewsData: TReview[] = [];
+
+        reviews.each((j, e) => {
+          let reviewData: TReview = {};
+          reviewsConfig.forEach((el) => {
+            const result = contentExtractors.review[el](e);
+            reviewData = { ...reviewData, [el]: result };
+          });
+          reviewsData.push(reviewData);
         });
-        reviewsData.push(reviewData);
-      });
-      productionData = { ...productionData, reviews: reviewsData };
+        productionData = { ...productionData, reviews: reviewsData };
+      }
     }
 
     data.push(productionData);
     if (stack.length === 0) {
-      await page.close();
       instance.status = "disabled";
       instance.logger();
+      await page.close();
       return;
     } else {
       instance.status = "waiting";

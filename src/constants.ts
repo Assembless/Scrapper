@@ -20,6 +20,7 @@ export const PROMPTS_MESSAGES = {
   saveNewConfig: textWhite(`Do you like to save your config for future ?`),
   newConfigName: textWhite(`What would be a name for your new config ?`),
   setAmountOfInstances: textWhite(`How many instances would you like to run?`),
+  firebaseCollectionName: textWhite(`What is your collection name`)
 };
 
 export const LOGS_MESSAGES = {

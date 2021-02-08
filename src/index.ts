@@ -1,5 +1,5 @@
 import { createScrapingConfig } from "./configCreator";
-import { createMainInstance, goToAndGetHTML, startBrowser } from "./browser";
+import { createMainInstance, startBrowser } from "./browser";
 import {
   chooseFile,
   chooseFirebaseConfig,
@@ -17,6 +17,7 @@ import { scraper } from "./scraper";
 import { browserStart, mainInstanceStart, scraperInitialize, stackCreate, welcomeMessage } from "./logs";
 import { createNewFirebaseConfig, firebaseManager, TFirebaseInfo } from "./firebase";
 import { textWhite } from "./styles";
+import { dataChecker } from "./dataChecker";
 
 welcomeMessage();
 
@@ -85,11 +86,15 @@ const Main = async () => {
 
       await scraperManager.startInstances();
 
-      scraperManager.watchStackFinish().then(async () => {
+      await scraperManager.watchStackFinish().then(async () => {
         const { fileName } = (await setFileName()) as { fileName: string };
         saveFile(`./results/${fileName}`, scraperManager.data);
       });
 
+      Main()
+      return
+    case 'Run data check':
+      await dataChecker()
       Main()
       return
     case 'Exit':

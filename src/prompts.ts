@@ -1,7 +1,7 @@
 import inquirer, { prompt } from "inquirer";
 import {MAX_PRODUCTIONS,PROMPTS_MESSAGES as messages} from './constants'
 
-type TSelectActionType = "Scrap productions" | "Upload data" | 'Exit';
+type TSelectActionType = "Scrap productions" | "Upload data" | 'Run data check' | 'Exit';
 
 const firebaseQuestions = [
   {
@@ -26,7 +26,7 @@ export const selectActionType = async (): Promise<{ actionType: TSelectActionTyp
     type: "list",
     name: "actionType",
     message: messages.selectActionType,
-    choices: ["Scrap productions", "Upload data",'Exit'],
+    choices: ["Scrap productions", "Upload data",'Run data check','Exit'],
   });
 };
 

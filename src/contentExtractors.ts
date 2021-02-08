@@ -2,7 +2,8 @@ import $ from "cheerio";
 import { TStars } from "./types";
 
 const title = (html: cheerio.Cheerio): string => {
-  return html.find("h1").text().trim();
+  const data = html.find("h1").text().trim()
+  return data ? data : 'No data';
 };
 
 const year = (html: cheerio.Cheerio): string => {
@@ -11,7 +12,7 @@ const year = (html: cheerio.Cheerio): string => {
   const filtered = numbersOnly.filter(e=> {
     return e.length === 4 || e.length === 5 || e.length === 9
   })
-  return filtered[0]
+  return filtered[0] ? filtered[0] : 'No data'
 
 };
 const director = (html: cheerio.Cheerio): string => {
@@ -22,41 +23,44 @@ const director = (html: cheerio.Cheerio): string => {
   return data  ? data : "No data";
 };
 
-const genres = (html: cheerio.Cheerio): string[] => {
+const genres = (html: cheerio.Cheerio): string[] | string => {
   const container = html.find("div.subtext a");
   const genresHref = container.slice(0,container.length - 1)
-  const reviews:string[] = []
+  const genres:string[] = []
   genresHref.each((i,e)=>{
     const text = $(e).text().trim()
-    reviews.push(text)
+    genres.push(text)
   })
 
-  return reviews
+  return genres.length ? genres : 'No data'
 };
 const plot = (html: cheerio.Cheerio): string => {
-  return html.find("div.summary_text").text().trim();
+  const data = html.find("div.summary_text").text().trim();
+  return data ? data : 'No data'
 };
-const metascore = (html: cheerio.Cheerio): number | string => {
+const metascore = (html: cheerio.Cheerio): string => {
   const data = html.find("div.metacriticScore.score_mixed.titleReviewBarSubItem span").text().trim();
-  return data === undefined ? "-" : data;
+  return data ? data : 'No data';
 };
 
-const raiting = (html: cheerio.Cheerio): number | string => {
+const raiting = (html: cheerio.Cheerio): string => {
   const data = html.find("div.ratingValue strong span").text().trim();
-  return data === "-" ? "-" : data;
+  return data === "-" ? "No data" : data;
 };
 
 const poster = (html: cheerio.Cheerio): string => {
   const poster = html.find("div.poster img").attr("src");
-  return poster !== undefined ? poster : "Couldn't get poster";
+  return poster ? poster : "No data";
 };
 const storylinePlot = (html: cheerio.Cheerio): string => {
-  return html.find("div#titleStoryLine p span").text().trim();
+  const data = html.find("div#titleStoryLine p span").text().trim();
+  return data ? data : 'No data'
 };
 const duration = (html: cheerio.Cheerio): string => {
-  return html.find("time").first().text().trim();
+  const data = html.find("time").first().text().trim();
+  return data ? data : 'No data'
 };
-const stars = (html: cheerio.Cheerio): TStars[] => {
+const stars = (html: cheerio.Cheerio): TStars[] | string => {
   const stars: TStars[] = [];
   const elements = html.find("table.cast_list tbody").children();
   const filtered = elements.slice(1, elements.length).filter((i, e) => {
@@ -75,7 +79,7 @@ const stars = (html: cheerio.Cheerio): TStars[] => {
     const data = { image, actor, character };
     stars.push(data);
   });
-  return stars;
+  return stars.length ? stars : 'No data';
 };
 
 const type = (html: cheerio.Cheerio): string => {
@@ -90,16 +94,20 @@ const type = (html: cheerio.Cheerio): string => {
 };
 
 const reviewTitle = (element: cheerio.Element): string => {
-  return $(element).find("a.title").text().trim();
+  const data = $(element).find("a.title").text().trim();
+  return data ? data : 'No data';
 };
 const reviewRaiting = (element: cheerio.Element): string => {
-  return $(element).find("span.rating-other-user-rating span").first().text().trim();
+  const data = $(element).find("span.rating-other-user-rating span").first().text().trim();
+  return data ? data : 'No data';
 };
 const reviewDate = (element: cheerio.Element): string => {
-  return $(element).find("span.review-date").text().trim();
+  const data = $(element).find("span.review-date").text().trim();
+  return data ? data : 'No data';
 };
 const reviewText = (element: cheerio.Element): string => {
-  return $(element).find("div.text").text().trim();
+  const data = $(element).find("div.text").text().trim();
+  return data ? data : 'No data';
 };
 
 

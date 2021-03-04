@@ -4,7 +4,7 @@ import { getDirectoryFiles, getFile, saveFile } from "./utils";
 
 export const dataChecker = async () => {
   const files = getDirectoryFiles("./results");
-  const { file } = await chooseFile(files);
+  const { file } = await chooseFile(files,'fileToCheck');
   const data = getFile(`./results/${file}`) as TData[];
 
   const configs = getDirectoryFiles("./queryConfigs");

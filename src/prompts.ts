@@ -1,7 +1,7 @@
 import inquirer, { prompt } from "inquirer";
-import {MAX_PRODUCTIONS,PROMPTS_MESSAGES as messages} from './constants'
-
-type TSelectActionType = "Scrap productions" | "Upload data" | 'Run data check' | 'Exit';
+import {PROMPTS_MESSAGES as messages} from './messages'
+import {MAX_PRODUCTIONS} from './constants'
+import {TChooseFile, TSelectActionType} from './types'
 
 const firebaseQuestions = [
   {
@@ -83,12 +83,11 @@ export const setProductionsNumber = async (startingIndex: number): Promise<{ pro
   });
 };
 
-
-export const chooseFile = async (files: string[]): Promise<{ file: string }> => {
+export const chooseFile = async (files: string[],type: TChooseFile): Promise<{ file: string }> => {
   return await prompt({
     type: "list",
     name: "file",
-    message: messages.chooseFile,
+    message: messages.chooseFile[type],
     choices: files,
   });
 };

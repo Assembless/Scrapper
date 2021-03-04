@@ -1,8 +1,7 @@
 import boxen, { Options } from "boxen";
 import ora from "ora";
-import { LOGS_MESSAGES as messages } from "./constants";
+import { LOGS_MESSAGES as messages } from "./messages";
 import { colors } from "./styles";
-import listr from 'listr'
 
 const welcomeBoxOptions:Options = {
   align: "center",

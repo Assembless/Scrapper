@@ -1,3 +1,5 @@
+import { Browser, Page } from "puppeteer";
+
 export type TStars = {
   image: string | undefined;
   actor: string;
@@ -34,3 +36,23 @@ export type TReviewConfig = "title"| "raiting"| "date"| "text"
 export type TMainConfig = "title" | "year" | "director" | "genres" | "raiting" | "metascore" | "plot" | "poster" | "storylinePlot" | "duration" | "type" | "stars";
 
 export type TExtractConfig = {mainConfig: TMainConfig[],reviewsConfig: TReviewConfig[]}
+
+
+type TStatus = "disabled" | "active" | "waiting";
+
+export type TInstance = { name: string; page: Page; status: TStatus; logger: (task?: string) => void };
+
+export type TScraper = (
+  browser: Browser,
+  config: TExtractConfig,
+  userInput: { startingIndex: number; productionsNumber: number; instanceAmount: number }
+) => Promise<{
+  startInstances: () => Promise<void>;
+  createInstances: () => Promise<void>;
+  createStack: (mainInstance: Page) => Promise<void>;
+  watchStackFinish: () => Promise<void>;
+  data: TData[];
+}>;
+
+export type TSelectActionType = "Scrap productions" | "Upload data" | "Run data check" | "Exit";
+export type TChooseFile = 'upload' | 'fileToCheck'

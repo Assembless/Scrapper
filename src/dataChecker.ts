@@ -1,5 +1,5 @@
 import { chooseFile, setFileName } from "./prompts";
-import { TData, TExtractConfig } from "./types";
+import { TData } from "./types";
 import { createConfigFromData, getDirectoryFiles, getFile, saveFile } from "./utils";
 
 export const dataChecker = async () => {

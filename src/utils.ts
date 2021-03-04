@@ -1,8 +1,8 @@
 import fs from "fs";
 import chalk, { yellow } from "chalk";
-import { TData, TExtractConfig,TReviewConfig } from "./types";
+import { TData, TExtractConfig, TFolders, TReviewConfig } from "./types";
 
-import {TMainConfig} from './types'
+import { TMainConfig } from "./types";
 
 export const extractUID = (string: string) => {
   const [a, b, c, d, e, f, g] = string.split("/");
@@ -32,7 +32,6 @@ export const getDirectoryFiles = (directoryPath: fs.PathLike) => {
   return files;
 };
 
-
 export const createConfigFromData = (file: TData[]): TExtractConfig => {
   const object = file[0];
 
@@ -47,3 +46,19 @@ export const createConfigFromData = (file: TData[]): TExtractConfig => {
 
   return config;
 };
+
+export const createFolderIfNoExist = (folder: TFolders) => {
+  const path = `./${folder}`;
+
+  if (!fs.existsSync(path)) {
+    fs.mkdirSync(path);
+  }
+};
+
+
+export const createAllNeededFolders = () => {
+  createFolderIfNoExist('dataChecks')
+  createFolderIfNoExist('firebaseConfigs')
+  createFolderIfNoExist('queryConfigs')
+  createFolderIfNoExist('results')
+}

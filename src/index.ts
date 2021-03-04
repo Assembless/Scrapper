@@ -5,8 +5,11 @@ import { textWhite } from "./styles";
 import { upload } from "./actions/upload";
 import { scrap } from "./actions/scrap";
 import { check } from "./actions/check";
+import { createAllNeededFolders } from "./utils";
 
 welcomeMessage();
+
+createAllNeededFolders()
 
 const Main = async () => {
   const { actionType } = await selectActionType();

@@ -56,3 +56,6 @@ export type TScraper = (
 
 export type TSelectActionType = "Scrap productions" | "Upload data" | "Run data check" | "Exit";
 export type TChooseFile = 'upload' | 'fileToCheck'
+
+
+export type TFolders = 'dataChecks' | 'queryConfigs' | 'firebaseConfigs' | 'results'

@@ -3,6 +3,7 @@ import { TData } from "../types";
 import { createConfigFromData, getDirectoryFiles, getFile, saveFile } from "../utils";
 
 export const check = async () => {
+
   const files = getDirectoryFiles("./results");
   const { file } = await chooseFile(files, "fileToCheck");
   const data = getFile(`./results/${file}`) as TData[];

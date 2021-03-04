@@ -6,7 +6,7 @@ import listr from 'listr'
 
 const welcomeBoxOptions:Options = {
   align: "center",
-  padding: { top: 1, bottom: 1, right: 25, left: 25 },
+  padding: { top: 1, bottom: 1, right: 15, left: 15 },
   margin: { top: 2, bottom: 2, left: 0, right: 0 },
   float: "left",
   borderColor: colors.yellow,

@@ -12,6 +12,8 @@ export const dataChecker = async () => {
   const configData = getFile(`./queryConfigs/${config}`) as TExtractConfig;
 
   const problemStack: any[] = [];
+  let numberOfErrors: number = 0
+
 
   data.forEach((e) => {
     const errorStack: string[] = [];
@@ -21,10 +23,17 @@ export const dataChecker = async () => {
       }
     });
     if (errorStack.length) {
+      numberOfErrors += errorStack.length
       problemStack.push({ uid: e.uid, problems: errorStack });
     }
   });
 
+
+  if (problemStack.length){
+    console.log(`Found ${numberOfErrors} problems in ${problemStack.length} files`)
+  }else{
+    console.log(`Didn't found any problems`)
+  }
   const { fileName } = await setFileName();
   saveFile(`./dataChecks/${fileName}`, problemStack);
 };

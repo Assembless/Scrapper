@@ -19,11 +19,10 @@ import { createNewFirebaseConfig, firebaseManager, TFirebaseInfo } from "./fireb
 import { textWhite } from "./styles";
 import { dataChecker } from "./dataChecker";
 
+
 welcomeMessage();
 
-
 const Main = async () => {
-
   const { actionType } = await selectActionType();
 
   switch (actionType) {
@@ -50,14 +49,13 @@ const Main = async () => {
           config = await createNewFirebaseConfig();
         }
 
-        console.log(data)
-        const firebase = firebaseManager(config,data)
+        console.log(data);
+        const firebase = firebaseManager(config, data);
 
-        firebase.saveToFirestore()
-
+        firebase.saveToFirestore();
       }
-      Main()
-      return
+      setTimeout(Main, 500);
+      return;
     case "Scrap productions":
       let config: TExtractConfig;
       const configs: string[] = getDirectoryFiles("./queryConfigs/");
@@ -91,19 +89,19 @@ const Main = async () => {
         saveFile(`./results/${fileName}`, scraperManager.data);
       });
 
-      Main()
-      return
-    case 'Run data check':
-      await dataChecker()
-      Main()
-      return
-    case 'Exit':
-      console.log(textWhite('See you later'))
-      process.exit()
+      setTimeout(Main, 500);
+      return;
+    case "Run data check":
+      await dataChecker();
+      setTimeout(Main, 500);
+      return;
+    case "Exit":
+      console.log(textWhite("See you later"));
+      process.exit();
     default:
-      Main();
-      return
+      setTimeout(Main, 500);
+      return;
   }
 };
 
-Main()
+setTimeout(Main, 500);

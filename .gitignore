@@ -3,5 +3,6 @@ results
 firebaseConfigs
 queryConfigs
 build
+dataChecks
 
 build/index.js

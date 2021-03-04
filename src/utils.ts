@@ -1,5 +1,8 @@
 import fs from "fs";
 import chalk, { yellow } from "chalk";
+import { TData, TExtractConfig,TReviewConfig } from "./types";
+
+import {TMainConfig} from './types'
 
 export const extractUID = (string: string) => {
   const [a, b, c, d, e, f, g] = string.split("/");
@@ -27,4 +30,20 @@ export const getDirectoryFiles = (directoryPath: fs.PathLike) => {
     files.push(name);
   });
   return files;
+};
+
+
+export const createConfigFromData = (file: TData[]): TExtractConfig => {
+  const object = file[0];
+
+  const rootKeys = Object.keys(object) as TMainConfig[];
+  let reviewKeys: TReviewConfig[] = [];
+
+  if (object.reviews) {
+    reviewKeys = Object.keys(object.reviews[0]) as TReviewConfig[];
+  }
+
+  const config: TExtractConfig = { mainConfig: rootKeys, reviewsConfig: reviewKeys };
+
+  return config;
 };

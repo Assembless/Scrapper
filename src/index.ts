@@ -28,7 +28,7 @@ const Main = async () => {
   switch (actionType) {
     case "Upload data":
       const files = getDirectoryFiles("./results/");
-      const { file } = await chooseFile(files);
+      const { file } = await chooseFile(files,'upload');
 
       const data = getFile(`./results/${file}`) as TData[];
 

@@ -1,27 +1,12 @@
-import { Browser, Page } from "puppeteer";
+import {  Page } from "puppeteer";
 import { goToAndGetHTML } from "./browser";
 import { contentExtractors } from "./contentExtractors";
 import { miscExtractors } from "./miscExtractors";
-import { TData, TExtractConfig, TReview } from "./types";
+import { TData, TReview } from "./types";
 import { extractUID } from "./utils";
 import { MAX_REVIEWS } from "./constants";
 import { textGreen, textRed, textWhite, textYellow } from "./styles";
-
-type TStatus = "disabled" | "active" | "waiting";
-
-type TInstance = { name: string; page: Page; status: TStatus; logger: (task?: string) => void };
-
-type TScraper = (
-  browser: Browser,
-  config: TExtractConfig,
-  userInput: { startingIndex: number; productionsNumber: number; instanceAmount: number }
-) => Promise<{
-  startInstances: () => Promise<void>;
-  createInstances: () => Promise<void>;
-  createStack: (mainInstance: Page) => Promise<void>;
-  watchStackFinish: () => Promise<void>;
-  data: TData[];
-}>;
+import {TInstance,TScraper} from './types'
 
 export const scraper: TScraper = async (browser, config, userInput) => {
   const data: TData[] = [];

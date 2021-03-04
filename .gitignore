@@ -4,5 +4,6 @@ firebaseConfigs
 queryConfigs
 build
 dataChecks
+.vscode
 
 build/index.js

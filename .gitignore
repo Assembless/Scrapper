@@ -5,5 +5,7 @@ queryConfigs
 build
 dataChecks
 .vscode
+puppeteer
+exec
 
 build/index.js

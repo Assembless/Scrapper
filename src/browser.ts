@@ -1,13 +1,26 @@
 import puppeteer, { Browser, Page } from "puppeteer";
 import cheerio from "cheerio";
 
-export const BROWSER_CONFIG: puppeteer.LaunchOptions = {
-  args: ["--lang=en"],
-};
+const downloadChromium = async() => {
+      const download = require('download-chromium');
+    const os = require('os');
+    const tmp = os.tmpdir();
+
+    const exec = await download({
+        revision: 722234,
+        installPath: `${tmp}/.local-chromium`})
+
+      return exec
+    }
+
 
 export const startBrowser = async (): Promise<Browser> => {
+
+  const exec = await downloadChromium()
+
   const browser = await puppeteer.launch({
     args: ["--lang=en"],
+    executablePath: exec,
   });
 
   return browser;
